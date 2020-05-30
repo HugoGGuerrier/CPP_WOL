@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "Config.h"
 #include "Logger.h"
@@ -74,7 +75,6 @@ int main(int argc, char *argv[]) {
     // Display the configuration
     if(Config::debugFlag) {
         Logger::log_dev("Interpreter configuration :\n" + Config::toString());
-        Logger::log_dev("test");
     }
 
     // Display the help and quit if the flags is true
@@ -84,6 +84,10 @@ int main(int argc, char *argv[]) {
     }
 
     // Verify that the OWL file exists
+    std::ifstream owlFileStream;
+    if(!Config::owlFile.empty()) {
+        owlFileStream.open()
+    }
 
     // Create and init the interpreter
 
