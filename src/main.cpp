@@ -5,7 +5,7 @@
 #include "Logger.h"
 
 /**
- * The function to display yhe console help
+ * The function to display the console help
  */
 void displayHelp(bool full) {
     std::string helpText;
@@ -86,7 +86,12 @@ int main(int argc, char *argv[]) {
     // Verify that the OWL file exists
     std::ifstream owlFileStream;
     if(!Config::owlFile.empty()) {
-        owlFileStream.open()
+        owlFileStream.open(Config::owlFile);
+    }
+
+    if (!owlFileStream.is_open()) {
+        std::cout << "Specified OWL file " << Config::owlFile << " is missing or unreadable" << std::endl;
+        return 1;
     }
 
     // Create and init the interpreter
