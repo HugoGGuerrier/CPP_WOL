@@ -7,8 +7,9 @@ bool Config::helpFlag = false;
 bool Config::debugFlag = false;
 bool Config::logFlag = false;
 std::string Config::logFile = std::string();
-std::string Config::owlFile = std::string();
-std::vector<std::string> Config::owlArgs = std::vector<std::string>();
+std::string Config::wolFile = std::string();
+std::vector<std::string> Config::wolArgs = std::vector<std::string>();
+std::vector<std::string> Config::includePaths = std::vector<std::string>();
 
 // ----- Class method -----
 
@@ -19,13 +20,19 @@ std::string Config::toString() {
     res += "\tdebugFlag = " + btos(Config::debugFlag) + "\n";
     res += "\tlogFlag = " + btos(Config::logFlag) + "\n";
     res += "\tlogFile = " + Config::logFile + "\n";
-    res += "\towlFile = " + Config::owlFile + "\n";
+    res += "\twolFile = " + Config::wolFile + "\n";
 
-    std::string owlArgsString = "\towlArgs = <";
-    for(std::string const &owlArg : Config::owlArgs) {
-        owlArgsString += owlArg + " ";
+    std::string wolArgsString = "\twolArgs = <";
+    for(std::string const &wolArg : Config::wolArgs) {
+        wolArgsString += wolArg + " ";
     }
-    res += owlArgsString + ">" + "";
+    res += wolArgsString + ">" + "\n";
+
+    std::string includePathsString = "\tincludePaths = <";
+    for(std::string const &includePath : Config::includePaths) {
+        includePathsString += includePath + " ";
+    }
+    res += includePathsString + ">" + "";
 
     return res;
 }

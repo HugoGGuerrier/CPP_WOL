@@ -1,5 +1,5 @@
-#ifndef CPP_OWL_CONFIG_H
-#define CPP_OWL_CONFIG_H
+#ifndef CPP_WOL_CONFIG_H
+#define CPP_WOL_CONFIG_H
 
 #include <iostream>
 #include <vector>
@@ -16,8 +16,9 @@ public:
     static bool debugFlag;
     static bool logFlag;
     static std::string logFile;
-    static std::string owlFile;
-    static std::vector<std::string> owlArgs;
+    static std::string wolFile;
+    static std::vector<std::string> wolArgs;
+    static std::vector<std::string> includePaths;
 
     // ----- Class methods -----
 
@@ -29,4 +30,4 @@ public:
     static std::string toString();
 };
 
-#endif
+#endif // CPP_WOL_CONFIG_H

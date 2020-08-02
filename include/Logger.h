@@ -1,10 +1,10 @@
-#ifndef CPP_OWL_LOGGER_H
-#define CPP_OWL_LOGGER_H
+#ifndef CPP_WOL_LOGGER_H
+#define CPP_WOL_LOGGER_H
 
 #include <iostream>
 
 /**
- * This class is the OWL logger to display messages in the console and write it in the log if wanted
+ * This class is the WOL logger to display messages in the console and write it in the log if wanted
  */
 class Logger {
 private:
@@ -40,4 +40,4 @@ public:
     static void log_err(const std::string &msg);
 };
 
-#endif
+#endif // CPP_WOL_LOGGER_H

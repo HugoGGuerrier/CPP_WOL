@@ -1,0 +1,13 @@
+class Main {
+    static int test = 5;
+
+    /* This is a test comment */
+    public static int main(array<string> args) {
+        print(Main.test);
+        print(__globalTest);
+    }
+}
+
+// Set the global variable
+global string __globalTest = "This is a test";
+global intern __main = Main;

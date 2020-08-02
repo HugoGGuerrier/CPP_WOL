@@ -1,12 +1,33 @@
+# Init the project and the CMake version
+project(cpp_wol)
 cmake_minimum_required(VERSION 3.16)
-project(cpp_owl)
 
+# Set the cmake configuration
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+# Set the compile variable
+set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
+set(LEXER_DIR ${PROJECT_SOURCE_DIR}/src/lexer)
+set(LEXENV_CREATOR_DIR ${LEXER_DIR}/lexenv_creator)
 
+# Set the include directory
 include_directories(include)
 
-add_executable(cpp_owl src/main.cpp include/Config.h src/Logger.cpp include/Logger.h src/Config.cpp include/Utils.h src/Utils.cpp)
+# Compile the lexical environment creator
+add_executable(lexenv_creator ${LEXENV_CREATOR_DIR}/LexenvCreator.cpp)
+set_target_properties(lexenv_creator PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${LEXENV_CREATOR_DIR})
+
+# Run the lexical environment creator
+add_custom_command(OUTPUT "${LEXER_DIR}/Lexenv.cpp" COMMAND "${LEXENV_CREATOR_DIR}/lexenv_creator" ${LEXENV_CREATOR_DIR}/Lexenv.lex ${LEXER_DIR} DEPENDS ${LEXENV_CREATOR_DIR}/lexenv_creator ${LEXENV_CREATOR_DIR}/Lexenv.lex)
+add_custom_target(generate_lexenv ALL DEPENDS ${LEXER_DIR}/Lexenv.cpp)
+
+# Create the final executable, the WOL interpretor
+add_executable(cpp_wol src/Main.cpp
+        src/Config.cpp include/Config.h
+        src/Logger.cpp include/Logger.h
+        src/Utils.cpp include/Utils.h
+        src/lexer/Lexenv.cpp src/lexer/Lexenv.h
+        src/lexer/Lexer.cpp src/lexer/Lexer.h
+        src/lexer/Token.cpp src/lexer/Token.h
+        src/Interpreter.cpp include/Interpreter.h)
+add_dependencies(cpp_wol generate_lexenv)

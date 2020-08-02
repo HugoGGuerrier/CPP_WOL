@@ -1,5 +1,5 @@
-#ifndef CPP_OWL_UTILS_H
-#define CPP_OWL_UTILS_H
+#ifndef CPP_WOL_UTILS_H
+#define CPP_WOL_UTILS_H
 
 #include <iostream>
 
@@ -11,4 +11,12 @@
  */
 std::string btos(bool b);
 
-#endif //CPP_OWL_UTILS_H
+/**
+ * Get if a file exists and is readable
+ *
+ * @param file The file to verify
+ * @return True if the file is readable
+ */
+bool fileExists(const std::string& file);
+
+#endif //CPP_WOL_UTILS_H
