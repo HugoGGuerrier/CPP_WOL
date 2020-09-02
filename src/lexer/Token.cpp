@@ -1,4 +1,5 @@
-#include "Token.h"
+#include "lexer/Token.h"
+#include "Lexenv.h"
 
 // ----- Constructors -----
 
@@ -52,4 +53,17 @@ void Token::setEndPos(int ep) {
 
 void Token::setValue(const std::string &v) {
     this->value = v;
+}
+
+// ----- Class methods -----
+
+std::string Token::toString() const {
+    std::string res;
+    res = Lexenv::nameArray[this->id];
+
+    if(!this->value.empty()) {
+        res += "=" + this->value;
+    }
+
+    return res;
 }

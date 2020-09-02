@@ -66,7 +66,7 @@ public:
 
     // ----- Setters -----
 
-    void setId(int tokenId);
+    void setId(int newId);
 
     void setLine(int line);
 
@@ -75,6 +75,15 @@ public:
     void setEndPos(int endPos);
 
     void setValue(const std::string &value);
+
+    // ----- Class methods -----
+
+    /**
+     * Get the string representation of the token with its value if it exists
+     *
+     * @return The String representation
+     */
+    [[nodiscard]] std::string toString() const;
 };
 
 #endif // CPP_WOL_TOKEN_H

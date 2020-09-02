@@ -27,7 +27,7 @@ add_executable(cpp_wol src/Main.cpp
         src/Logger.cpp include/Logger.h
         src/Utils.cpp include/Utils.h
         src/lexer/Lexenv.cpp src/lexer/Lexenv.h
-        src/lexer/Lexer.cpp src/lexer/Lexer.h
-        src/lexer/Token.cpp src/lexer/Token.h
-        src/Interpreter.cpp include/Interpreter.h)
+        src/lexer/Lexer.cpp include/lexer/Lexer.h
+        src/lexer/Token.cpp include/lexer/Token.h
+        src/vm/VirtualMachine.cpp include/vm/VirtualMachine.h src/vm/Programs.cpp include/vm/Programs.h src/parser/ast/Program.cpp include/parser/ast/Program.h)
 add_dependencies(cpp_wol generate_lexenv)

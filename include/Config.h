@@ -19,6 +19,7 @@ public:
     static std::string wolFile;
     static std::vector<std::string> wolArgs;
     static std::vector<std::string> includePaths;
+    static int wolSize;
 
     // ----- Class methods -----
 

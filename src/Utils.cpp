@@ -1,4 +1,5 @@
 #include <fstream>
+#include <>
 
 #include "Utils.h"
 
@@ -18,7 +19,7 @@ std::string btos(const bool b) {
  * @param file The file name to tests
  * @return True if the file exists
  */
-bool fileExists(const std::string &file) {
+bool fileExists(const std::string & file) {
     std::ifstream fileStream;
     if(!file.empty()) {
         fileStream.open(file);
@@ -28,4 +29,8 @@ bool fileExists(const std::string &file) {
         }
     }
     return false;
+}
+
+std::string sha256hash(const std::string & strToHash) {
+    
 }

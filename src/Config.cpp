@@ -10,6 +10,7 @@ std::string Config::logFile = std::string();
 std::string Config::wolFile = std::string();
 std::vector<std::string> Config::wolArgs = std::vector<std::string>();
 std::vector<std::string> Config::includePaths = std::vector<std::string>();
+int Config::wolSize = 256;
 
 // ----- Class method -----
 
@@ -32,7 +33,9 @@ std::string Config::toString() {
     for(std::string const &includePath : Config::includePaths) {
         includePathsString += includePath + " ";
     }
-    res += includePathsString + ">" + "";
+    res += includePathsString + ">" + "\n";
+
+    res += "\twolSize = " + std::to_string(Config::wolSize) + "";
 
     return res;
 }

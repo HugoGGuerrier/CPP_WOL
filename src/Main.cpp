@@ -21,9 +21,10 @@ void displayHelp(bool full) {
     } else {
         helpText += "Options :\n";
         helpText += "\t-help (-h) : Display this message\n";
+        helpText += "\t-include (-i) : A list of directory to look sources in separated by \";\"\n";
+        helpText += "\t-memory (-m) <size> : Define the WOL memory size in MB";
         helpText += "\t-log (-l) <log-file> : Write all logs in the specified file\n";
         helpText += "\t-debug (-d) : Set the interpreter to the debug mode\n";
-        helpText += "\t-include (-i) : A list of directory to look sources in separated by \";\"\n";
     }
 
     helpText += "=====================================================";
@@ -103,7 +104,7 @@ int main(int argc, char *argv[]) {
 
     // Display the configuration
     if(Config::debugFlag) {
-        Logger::log_dev("Interpreter configuration :\n" + Config::toString());
+        Logger::log_dev("VirtualMachine configuration :\n" + Config::toString());
     }
 
     // Display the help and quit if the flags is true
