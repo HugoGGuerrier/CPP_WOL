@@ -1,0 +1,14 @@
+class Main {
+    int :test = 5;
+
+    /* This is a test comment */
+    public int :main(array<string> args) {
+        int local = 12;
+        print(Main:test);
+        print(__globalTest);
+    }
+}
+
+// Set the global variable
+string __globalTest = "This is a test";
+intern __main = Main:main;

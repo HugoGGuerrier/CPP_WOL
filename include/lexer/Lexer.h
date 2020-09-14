@@ -22,8 +22,6 @@ private:
 
     // ----- Internal methods -----
 
-
-
 public:
 
     // ----- Constructors -----
@@ -37,7 +35,7 @@ public:
 
     // ----- Getters -----
 
-    std::vector<Token> &getLexResult();
+    std::vector<Token> & getLexResult();
 
     // ----- Class methods -----
 

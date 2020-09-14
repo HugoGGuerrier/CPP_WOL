@@ -12,14 +12,17 @@ public:
 
     // ----- Attributes -----
 
-    static bool helpFlag;
-    static bool debugFlag;
-    static bool logFlag;
-    static std::string logFile;
-    static std::string wolFile;
-    static std::vector<std::string> wolArgs;
-    static std::vector<std::string> includePaths;
-    static int wolSize;
+    inline const static std::string version = "0.1a";
+
+    inline static bool helpFlag = false;
+    inline static bool debugFlag = false;
+    inline static bool logFlag = false;
+    inline static bool testFlag = false;
+    inline static std::string logFile = std::string();
+    inline static std::string wolFile = std::string();
+    inline static std::vector<std::string> wolArgs = std::vector<std::string>();
+    inline static std::vector<std::string> includePaths = std::vector<std::string>();
+    inline static int wolSize = 256;
 
     // ----- Class methods -----
 

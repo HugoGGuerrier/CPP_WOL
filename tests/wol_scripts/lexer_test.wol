@@ -1,0 +1,10 @@
+class Test {
+    bool :isCool = true;
+
+    void :main() {
+        print("This is the main function");
+    }
+}
+
+int a = 79876;
+string b = "This is a super test !!!";

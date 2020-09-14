@@ -1,21 +1,12 @@
 #include "Config.h"
 #include "Utils.h"
 
-// ----- Static attributes init -----
-
-bool Config::helpFlag = false;
-bool Config::debugFlag = false;
-bool Config::logFlag = false;
-std::string Config::logFile = std::string();
-std::string Config::wolFile = std::string();
-std::vector<std::string> Config::wolArgs = std::vector<std::string>();
-std::vector<std::string> Config::includePaths = std::vector<std::string>();
-int Config::wolSize = 256;
-
 // ----- Class method -----
 
 std::string Config::toString() {
     std::string res;
+
+    res += "\tversion = " + Config::version + "\n";
 
     res += "\thelpFlag = " + btos(Config::helpFlag) + "\n";
     res += "\tdebugFlag = " + btos(Config::debugFlag) + "\n";

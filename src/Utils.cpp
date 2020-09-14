@@ -1,5 +1,4 @@
 #include <fstream>
-#include <>
 
 #include "Utils.h"
 
@@ -29,8 +28,4 @@ bool fileExists(const std::string & file) {
         }
     }
     return false;
-}
-
-std::string sha256hash(const std::string & strToHash) {
-    
 }

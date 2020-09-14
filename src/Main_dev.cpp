@@ -5,6 +5,7 @@
 #include "Config.h"
 #include "Logger.h"
 #include "Utils.h"
+#include "TestEngine.h"
 
 /**
  * The function to display the console help
@@ -12,7 +13,7 @@
 void displayHelp(bool full) {
     std::string helpText;
 
-    helpText += "====== cpp_wol : Native WOL interpreter (0.1a) ======\n";
+    helpText += "====== cpp_wol : Native WOL interpreter (" + Config::version + ") ======\n";
     helpText += "Usage :\n";
     helpText += "\tcpp_wol [OPTIONS] <file-to-execute> [args...]\n\n";
 
@@ -22,9 +23,10 @@ void displayHelp(bool full) {
         helpText += "Options :\n";
         helpText += "\t-help (-h) : Display this message\n";
         helpText += "\t-include (-i) : A list of directory to look sources in separated by \";\"\n";
-        helpText += "\t-memory (-m) <size> : Define the WOL memory size in MB";
+        helpText += "\t-memory (-m) <size> : Define the WOL heap size in MB\n";
         helpText += "\t-log (-l) <log-file> : Write all logs in the specified file\n";
         helpText += "\t-debug (-d) : Set the interpreter to the debug mode\n";
+        helpText += "\t-test-mode (-tm) : Run all the unit tests and exit\n";
     }
 
     helpText += "=====================================================";
@@ -69,6 +71,10 @@ void readArgs(int argc, char *argv[]) {
                     include = strtok(nullptr, ";");
                 }
 
+            } else if(currentArg == "-test-mode" || currentArg == "-tm") {
+
+                Config::testFlag = true;
+
             }
 
         } else {
@@ -111,6 +117,12 @@ int main(int argc, char *argv[]) {
     if(Config::helpFlag) {
         displayHelp(true);
         return 0;
+    }
+
+    // Execute the tests if the flag is on true
+    if(Config::testFlag) {
+        int testResult = TestEngine::run();
+        return testResult;
     }
 
     // Verify that the WOL file exists

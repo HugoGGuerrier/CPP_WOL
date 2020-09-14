@@ -3,6 +3,7 @@ COMMENT_START:\/\*
 COMMENT_END:\*\/
 
 SEMICOLON:[;]
+DOUBLE_DOT:[:]
 COMMA:[,]
 DOT:[\.]
 EQ:[=]
@@ -19,15 +20,14 @@ RBRACKET:[\]]
 LPAREN:[(]
 RPAREN:[)]
 
-GLOBAL:global
 CLASS:class
-STATIC:static
 PRIVATE:private
 PROTECTED:protected
 PUBLIC:public
 
 PRINT_FUNC:print
 
+VOID_TYPE:void
 BOOL_TYPE:bool
 SHORT_TYPE:short
 INT_TYPE:int
@@ -46,5 +46,5 @@ TRUE_VAL:true
 FALSE_VAL:false
 NULL_VAL:null|NULL
 NUMBER_VAL:\-?[0-9]+(\.?[0-9])?[0-9]*
-CHAR_VALUE:\'.\'
-STRING_VALUE:\".*\"
+CHAR_VAL:\'.\'
+STRING_VAL:\".*\"
