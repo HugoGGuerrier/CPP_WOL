@@ -34,8 +34,7 @@ public:
      *
      * @return The exit code of the tests
      */
-    int run() override;
-
+    int run() const override;
 };
 
 

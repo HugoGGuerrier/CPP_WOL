@@ -36,11 +36,11 @@ if(${BUILD_FOR_DEV})
             src/parser/ast/Program.cpp include/parser/ast/Program.h
             src/vm/FilePool.cpp include/vm/FilePool.h
 
-            tests/TestEngine.cpp include/TestEngine.h
             include/TestBase.h
+            tests/TestEngine.cpp include/TestEngine.h
             tests/LexerTests.cpp tests/LexerTests.h
             tests/UtilsTests.cpp tests/UtilsTests.h
-            )
+            tests/TestBase.cpp)
 else()
     add_executable(cpp_wol src/Main_prod.cpp
             src/Config.cpp include/Config.h

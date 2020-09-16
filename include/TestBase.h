@@ -1,6 +1,7 @@
 #ifndef CPP_WOL_TESTBASE_H
 #define CPP_WOL_TESTBASE_H
 
+#include "Logger.h"
 
 /**
  * This is the base class of any test class
@@ -13,15 +14,8 @@ public:
      *
      * @return The exit code of the test
      */
-    virtual int run();
-
+    [[nodiscard]] virtual int run() const;
 };
-
-int TestBase::run() {
-    Logger::log_warn("Override this method! (TestBase::run())");
-
-    return 1;
-}
 
 
 #endif // CPP_WOL_TESTBASE_H

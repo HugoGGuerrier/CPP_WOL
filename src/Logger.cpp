@@ -27,3 +27,15 @@ void Logger::log_warn(const std::string &msg) {
 void Logger::log_err(const std::string &msg) {
     Logger::write_log("[ERROR] " + msg);
 }
+
+void Logger::log_test_info(const std::string &msg) {
+    Logger::write_log("[TEST - INFO] " + msg);
+}
+
+void Logger::log_test_warn(const std::string &msg) {
+    Logger::write_log("[TEST - WARNING] " + msg);
+}
+
+void Logger::log_test_err(const std::string &msg) {
+    Logger::write_log("[TEST - ERROR] " + msg);
+}

@@ -38,6 +38,27 @@ public:
      * @param msg The message to log
      */
     static void log_err(const std::string &msg);
+
+    /**
+     * Log a message durin a test
+     *
+     * @param msg The message to log
+     */
+    static void log_test_info(const std::string &msg);
+
+    /**
+     * Log a warning during a test
+     *
+     * @param msg The message to log
+     */
+    static void log_test_warn(const std::string &msg);
+
+    /**
+     * Log an error during a test
+     *
+     * @param msg The message to log
+     */
+    static void log_test_err(const std::string &msg);
 };
 
 #endif // CPP_WOL_LOGGER_H
