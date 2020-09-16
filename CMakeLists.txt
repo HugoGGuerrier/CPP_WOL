@@ -23,8 +23,12 @@ add_custom_command(OUTPUT "${LEXER_DIR}/Lexenv.cpp" COMMAND "${LEXENV_CREATOR_DI
 add_custom_target(generate_lexenv ALL DEPENDS ${LEXER_DIR}/Lexenv.cpp)
 
 # Create the final executable, the WOL interpretor in dev or prod mode
-
 if(${BUILD_FOR_DEV})
+    # Set the test dir
+    get_filename_component(BASE_PATH ./ ABSOLUTE)
+    configure_file(include/Config.h.temp ../include/Config.h)
+
+    # Create the dev executable
     add_executable(cpp_wol src/Main_dev.cpp
             src/Config.cpp include/Config.h
             src/Logger.cpp include/Logger.h
@@ -42,6 +46,11 @@ if(${BUILD_FOR_DEV})
             tests/UtilsTests.cpp tests/UtilsTests.h
             tests/TestBase.cpp)
 else()
+    # Set the test dir to void
+    set(BASE_PATH "void")
+    configure_file(include/Config.h.temp ../include/Config.h)
+
+    # Create the prod executable
     add_executable(cpp_wol src/Main_prod.cpp
             src/Config.cpp include/Config.h
             src/Logger.cpp include/Logger.h
@@ -54,5 +63,5 @@ else()
             src/vm/FilePool.cpp include/vm/FilePool.h)
 endif()
 
-
+# Add the dependence to the lexenv
 add_dependencies(cpp_wol generate_lexenv)

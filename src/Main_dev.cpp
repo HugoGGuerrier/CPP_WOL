@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 
     // Display the configuration
     if(Config::debugFlag) {
-        Logger::log_dev("VirtualMachine configuration :\n" + Config::toString());
+        Logger::log_dev("Interpreter configuration :\n" + Config::toString());
     }
 
     // Display the help and quit if the flags is true

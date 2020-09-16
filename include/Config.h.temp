@@ -13,7 +13,7 @@ public:
     // ----- Attributes -----
 
     inline const static std::string version = "0.1a";
-    inline const static std::string basePath = "/home/hugo/Projects/desktop/CPP_WOL";
+    inline const static std::string basePath = "@BASE_PATH@";
 
     inline static bool helpFlag = false;
     inline static bool debugFlag = false;

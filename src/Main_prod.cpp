@@ -24,7 +24,6 @@ void displayHelp(bool full) {
         helpText += "\t-include (-i) : A list of directory to look sources in separated by \";\"\n";
         helpText += "\t-memory (-m) <size> : Define the WOL heap size in MB\n";
         helpText += "\t-log (-l) <log-file> : Write all logs in the specified file\n";
-        helpText += "\t-debug (-d) : Set the interpreter to the debug mode\n";
     }
 
     helpText += "=====================================================";
@@ -55,10 +54,6 @@ void readArgs(int argc, char *argv[]) {
 
                 Config::logFlag = true;
                 Config::logFile = argv[++i];
-
-            } else if(currentArg == "-debug" || currentArg == "-d") {
-
-                Config::debugFlag = true;
 
             } else if(currentArg == "-include" || currentArg == "-i") {
 

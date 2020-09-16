@@ -7,10 +7,13 @@ std::string Config::toString() {
     std::string res;
 
     res += "\tversion = " + Config::version + "\n";
+    res += "\tbasePath = " + Config::basePath + "\n";
+    res += "\n";
 
     res += "\thelpFlag = " + btos(Config::helpFlag) + "\n";
     res += "\tdebugFlag = " + btos(Config::debugFlag) + "\n";
     res += "\tlogFlag = " + btos(Config::logFlag) + "\n";
+    res += "\ttestFlag = " + btos(Config::testFlag) + "\n";
     res += "\tlogFile = " + Config::logFile + "\n";
     res += "\twolFile = " + Config::wolFile + "\n";
 
