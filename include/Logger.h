@@ -14,6 +14,11 @@ private:
     inline const static int RED = 31;
     inline const static int GREEN = 32;
     inline const static int YELLOW = 33;
+    inline const static int WHITE = 30;
+
+    inline const static int RED_BG = 41;
+    inline const static int GREEN_BG = 42;
+    inline const static int YELLOW_BG = 43;
 
     // ----- Internal methods -----
 
@@ -67,6 +72,20 @@ public:
      * @param msg The message to log
      */
     static void log_test_err(const std::string &msg);
+
+    /**
+     * Log a test success
+     *
+     * @param msg The message to log
+     */
+    static void log_test_success(const std::string &msg);
+
+    /**
+     * Log a test failure
+     *
+     * @param msg The message to log
+     */
+    static void log_test_failure(const std::string &msg);
 };
 
 #endif // CPP_WOL_LOGGER_H

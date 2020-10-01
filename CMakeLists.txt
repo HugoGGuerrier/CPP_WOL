@@ -8,7 +8,7 @@ set(BUILD_FOR_DEV TRUE)
 
 # Set the compile variable
 set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
-set(LEXER_DIR ${PROJECT_SOURCE_DIR}/src/lexer)
+set(LEXER_DIR ${CMAKE_SOURCE_DIR}/src/lexer)
 set(LEXENV_CREATOR_DIR ${LEXER_DIR}/lexenv_creator)
 
 # Set the include directory
@@ -18,11 +18,13 @@ include_directories(include)
 add_executable(lexenv_creator ${LEXENV_CREATOR_DIR}/LexenvCreator.cpp)
 set_target_properties(lexenv_creator PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${LEXENV_CREATOR_DIR})
 
-# Run the lexical environment creator
-add_custom_command(OUTPUT "${LEXER_DIR}/Lexenv.cpp ${LEXER_DIR}/Lexenv.h" COMMAND "${LEXENV_CREATOR_DIR}/lexenv_creator" ${LEXENV_CREATOR_DIR}/Lexenv.lex ${LEXER_DIR} DEPENDS ${LEXENV_CREATOR_DIR}/lexenv_creator ${LEXENV_CREATOR_DIR}/Lexenv.lex)
-add_custom_target(generate_lexenv ALL DEPENDS ${LEXER_DIR}/Lexenv.cpp ${LEXER_DIR}/Lexenv.h)
+# Add the custom command to generate the lexical environment
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/lexer/Lexenv.cpp ${CMAKE_SOURCE_DIR}/src/lexer/Lexenv.h
+        COMMAND "${LEXENV_CREATOR_DIR}/lexenv_creator" ${LEXENV_CREATOR_DIR}/Lexenv.lex ${LEXER_DIR}
+        DEPENDS ${LEXENV_CREATOR_DIR}/LexenvCreator.cpp ${LEXENV_CREATOR_DIR}/Lexenv.lex
+        COMMENT "Generating the lexical environment...")
 
-# Create the final executable, the WOL interpretor in dev or prod mode
+# Create the final executable, the WOL interpreter in dev or prod mode
 if(${BUILD_FOR_DEV})
     # Set the test dir
     get_filename_component(BASE_PATH ./ ABSOLUTE)
@@ -71,5 +73,5 @@ else()
             include/exceptions/LexingException.h)
 endif()
 
-# Add the dependence to the lexenv
-add_dependencies(cpp_wol generate_lexenv)
+# Add the dependency to the lexenv creator
+add_dependencies(cpp_wol lexenv_creator)

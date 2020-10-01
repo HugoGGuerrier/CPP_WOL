@@ -6,6 +6,7 @@
 
 std::vector<std::string> symbolNameVector;
 std::vector<std::string> symbolRegexVector;
+int symbolNumber = 0;
 
 /**
  * Function to use to parse the lex file and fill the vectors
@@ -27,6 +28,7 @@ void parseLexFile(std::ifstream &lexFile) {
             // Place the token definition in the wanted vectors
             symbolNameVector.emplace_back(tokenName);
             symbolRegexVector.emplace_back(tokenRegex);
+            symbolNumber++;
         }
     }
 }
@@ -54,6 +56,8 @@ int exportLexEnv(const std::string & exportDirectory) {
     *hExportString += "#ifndef CPP_WOL_LEXENV_H\n#define CPP_WOL_LEXENV_H\n\nclass Lexenv {\npublic:\n\tconst static char *regexArray[];\n\tconst static char *nameArray[];\n";
 
     // Export static fields
+    *hExportString += "\tconst static int symbolNumber = " + std::to_string(symbolNumber) + ";\n\n";
+
     for(int i = 0; i < symbolNameVector.size(); i++) {
         *hExportString += "\tconst static int " + symbolNameVector[i] + " = " + std::to_string(i) + ";\n";
     }

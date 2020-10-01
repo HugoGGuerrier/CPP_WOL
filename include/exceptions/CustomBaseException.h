@@ -47,6 +47,15 @@ public:
     std::string what() {
         return this->cls + "::" +  this->func + " -> " + this->msg;
     }
+
+    /**
+     * Get the exception message
+     *
+     * @return The exception message in a string
+     */
+    std::string getMsg() {
+        return this->msg;
+    }
 };
 
 #endif // CPP_WOL_CUSTOMBASEEXCEPTION_H

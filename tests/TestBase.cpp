@@ -38,11 +38,11 @@ int TestBase::verifyTests() {
     for(int i = 0; i < this->testNumber; i++) {
         res += this->testsStatus[i];
         if(this->testsStatus[i] == 1) {
-            Logger::log_test_err("Test " + std::to_string(i + 1) + " : Failure !");
+            Logger::log_test_failure("Test " + std::to_string(i + 1) + " : Failure !");
         } else if(this->testsStatus[i] == 0) {
-            Logger::log_test_info("Test " + std::to_string(i + 1) + " : Success !");
+            Logger::log_test_success("Test " + std::to_string(i + 1) + " : Success !");
         } else if(this->testsStatus[i] == -1) {
-            Logger::log_test_info("Test " + std::to_string(i + 1) + " : Ignored !");
+            Logger::log_test_warn("Test " + std::to_string(i + 1) + " : Ignored !");
         }
     }
 

@@ -5,18 +5,27 @@
 
 void Logger::write_log(const std::string &msg, int fg, int bg) {
     // Init the result string;
-    std::string finalMessage = msg;
+    std::string finalMessage;
 
-    // Create the colored message
     if(Config::color) {
-        std::string coloredString;
-        if(fg != 0 || bg != 0) {
 
-            coloredString.append(msg);
-            coloredString.append("\033[0m");
+        // Create the colored message
+        if(fg != 0 || bg != 0) {
+            finalMessage.append("\033[");
+            if(fg != 0) finalMessage.append(std::to_string(fg));
+            if(fg != 0 && bg != 0) finalMessage.append(";");
+            if(bg != 0) finalMessage.append(std::to_string(bg));
+            finalMessage.append("m");
         }
 
-        msg = coloredString;
+        finalMessage.append(msg);
+        finalMessage.append("\033[0m");
+
+    } else {
+
+        // Just add the message without color
+        finalMessage.append(msg);
+
     }
 
     // Write in the console
@@ -60,5 +69,17 @@ void Logger::log_test_warn(const std::string &msg) {
 void Logger::log_test_err(const std::string &msg) {
     if(Config::testFlag) {
         Logger::write_log("[TEST - ERROR] " + msg, Logger::RED);
+    }
+}
+
+void Logger::log_test_success(const std::string &msg) {
+    if(Config::testFlag) {
+        Logger::write_log("[TEST - SUCCESS] " + msg, Logger::WHITE, Logger::GREEN_BG);
+    }
+}
+
+void Logger::log_test_failure(const std::string &msg) {
+    if(Config::testFlag) {
+        Logger::write_log("[TEST - FAILURE] " + msg, Logger::WHITE, Logger::RED_BG);
     }
 }

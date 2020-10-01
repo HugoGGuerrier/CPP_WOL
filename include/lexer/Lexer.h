@@ -27,13 +27,20 @@ private:
     // ----- Internal methods -----
 
     /**
-     * Process a string following the lexical environment
+     * Process a string following the lexical environment and create the token if one is found
      *
      * @param stringToProcess The string to process
      * @param resultToken The token to store the result of processing
-     * @throws LexingException if the string have a lexing exception
+     * @return The id of the found token, -1 else
      */
-    void processString(const std::string &stringToProcess, Token &resultToken) const;
+    [[nodiscard]] int processString(const std::string &stringToProcess) const;
+
+    /**
+     * Add a token with the wanted ID to the lex result
+     *
+     * @param tokenId The ID of the token to add
+     */
+    void addToken(int tokenId, int startPos, int endPos, int line);
 
 public:
 
@@ -56,6 +63,8 @@ public:
      * Start the lexing
      *
      * @return 0 if the lexing worked, 1 else
+     * @throws FileException If the file is unreadable
+     * @throws LexingException If the file contains unlexable tokens
      */
     void doLex();
 };

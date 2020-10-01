@@ -5,6 +5,8 @@ class Lexenv {
 public:
 	const static char *regexArray[];
 	const static char *nameArray[];
+	const static int symbolNumber = 43;
+
 	const static int ONE_LINE_COMMENT = 0;
 	const static int COMMENT_START = 1;
 	const static int COMMENT_END = 2;
