@@ -15,6 +15,7 @@ public:
     inline const static std::string version = "0.1a";
     inline const static std::string basePath = "@BASE_PATH@";
 
+    inline static bool color = false;
     inline static bool helpFlag = false;
     inline static bool debugFlag = false;
     inline static bool logFlag = false;
