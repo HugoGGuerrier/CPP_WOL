@@ -2,8 +2,11 @@
 #define CPP_WOL_LEXERTESTS_H
 
 #include <fstream>
+#include <vector>
+#include <lexer/Token.h>
 
 #include "TestBase.h"
+#include "Config.h"
 
 /**
  * This class contains all tests for the lexer
@@ -13,10 +16,9 @@ private:
 
     // ----- Attributes -----
 
-    /**
-     * The file to test the lexer
-     */
-    std::ifstream testFile;
+    inline const static std::string testFile1 = Config::basePath + "/tests/wol_scripts/lexer_test1.wol";
+
+    inline const static std::string testFile2 = Config::basePath + "/tests/wol_scripts/lexer_test2.wol";
 
 public:
 
@@ -34,7 +36,7 @@ public:
      *
      * @return The exit code of the tests
      */
-    int run() const override;
+    int run() override;
 };
 
 

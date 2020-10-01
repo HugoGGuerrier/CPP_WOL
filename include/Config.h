@@ -15,6 +15,7 @@ public:
     inline const static std::string version = "0.1a";
     inline const static std::string basePath = "/home/hugo/Projects/desktop/CPP_WOL";
 
+    inline static bool color = false;
     inline static bool helpFlag = false;
     inline static bool debugFlag = false;
     inline static bool logFlag = false;
@@ -23,7 +24,7 @@ public:
     inline static std::string wolFile = std::string();
     inline static std::vector<std::string> wolArgs = std::vector<std::string>();
     inline static std::vector<std::string> includePaths = std::vector<std::string>();
-    inline static int wolSize = 256;
+    inline static int heapSize = 256;
 
     // ----- Class methods -----
 

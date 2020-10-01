@@ -6,6 +6,7 @@
 std::string Config::toString() {
     std::string res;
 
+    res += "\tcolor = " + btos(Config::color) + "\n";
     res += "\tversion = " + Config::version + "\n";
     res += "\tbasePath = " + Config::basePath + "\n";
     res += "\n";
@@ -29,7 +30,7 @@ std::string Config::toString() {
     }
     res += includePathsString + ">" + "\n";
 
-    res += "\twolSize = " + std::to_string(Config::wolSize) + "";
+    res += "\twolSize = " + std::to_string(Config::heapSize) + "";
 
     return res;
 }

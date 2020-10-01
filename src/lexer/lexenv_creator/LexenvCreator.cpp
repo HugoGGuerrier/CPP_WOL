@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <memory>
 
 std::vector<std::string> symbolNameVector;
 std::vector<std::string> symbolRegexVector;
@@ -34,6 +35,7 @@ void parseLexFile(std::ifstream &lexFile) {
  * Function to export the lexical environment in the CPP format to
  *
  * @param exportDirectory The directory where you want to export the lexenv
+ * @return If the export worked
  */
 int exportLexEnv(const std::string & exportDirectory) {
     // Open the two export files
@@ -48,7 +50,7 @@ int exportLexEnv(const std::string & exportDirectory) {
     // --- Export the H part
 
     // Prepare the H string
-    auto *hExportString = new std::string;
+    std::unique_ptr<std::string> hExportString(new std::string);
     *hExportString += "#ifndef CPP_WOL_LEXENV_H\n#define CPP_WOL_LEXENV_H\n\nclass Lexenv {\npublic:\n\tconst static char *regexArray[];\n\tconst static char *nameArray[];\n";
 
     // Export static fields
@@ -61,15 +63,14 @@ int exportLexEnv(const std::string & exportDirectory) {
 
     // Export the H file
     hExport << *hExportString;
-    delete hExportString;
     hExport.close();
 
     // --- Export the CPP part
     cppExport << "#include \"Lexenv.h\"\n\n";
 
     // Prepare the export strings
-    auto *nameArrayString = new std::string;
-    auto *regexArrayString = new std::string;
+    std::unique_ptr<std::string> nameArrayString(new std::string());
+    std::unique_ptr<std::string> regexArrayString(new std::string());
 
     // Define regex and name arrays
     *nameArrayString += "const char *Lexenv::nameArray[" + std::to_string(symbolNameVector.size()) + "] = {";
@@ -91,8 +92,6 @@ int exportLexEnv(const std::string & exportDirectory) {
 
     // Write the cpp file
     cppExport << *nameArrayString << *regexArrayString;
-    delete nameArrayString;
-    delete regexArrayString;
     cppExport.close();
 
     // Return the success

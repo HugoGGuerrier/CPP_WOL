@@ -12,15 +12,15 @@ set(LEXER_DIR ${PROJECT_SOURCE_DIR}/src/lexer)
 set(LEXENV_CREATOR_DIR ${LEXER_DIR}/lexenv_creator)
 
 # Set the include directory
-include_directories(include include/parser/ast)
+include_directories(include)
 
 # Compile the lexical environment creator
 add_executable(lexenv_creator ${LEXENV_CREATOR_DIR}/LexenvCreator.cpp)
 set_target_properties(lexenv_creator PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${LEXENV_CREATOR_DIR})
 
 # Run the lexical environment creator
-add_custom_command(OUTPUT "${LEXER_DIR}/Lexenv.cpp" COMMAND "${LEXENV_CREATOR_DIR}/lexenv_creator" ${LEXENV_CREATOR_DIR}/Lexenv.lex ${LEXER_DIR} DEPENDS ${LEXENV_CREATOR_DIR}/lexenv_creator ${LEXENV_CREATOR_DIR}/Lexenv.lex)
-add_custom_target(generate_lexenv ALL DEPENDS ${LEXER_DIR}/Lexenv.cpp)
+add_custom_command(OUTPUT "${LEXER_DIR}/Lexenv.cpp ${LEXER_DIR}/Lexenv.h" COMMAND "${LEXENV_CREATOR_DIR}/lexenv_creator" ${LEXENV_CREATOR_DIR}/Lexenv.lex ${LEXER_DIR} DEPENDS ${LEXENV_CREATOR_DIR}/lexenv_creator ${LEXENV_CREATOR_DIR}/Lexenv.lex)
+add_custom_target(generate_lexenv ALL DEPENDS ${LEXER_DIR}/Lexenv.cpp ${LEXER_DIR}/Lexenv.h)
 
 # Create the final executable, the WOL interpretor in dev or prod mode
 if(${BUILD_FOR_DEV})
@@ -39,6 +39,10 @@ if(${BUILD_FOR_DEV})
             src/vm/VirtualMachine.cpp include/vm/VirtualMachine.h
             src/parser/ast/Program.cpp include/parser/ast/Program.h
             src/vm/FilePool.cpp include/vm/FilePool.h
+
+            include/exceptions/CustomBaseException.h
+            include/exceptions/FileException.h
+            include/exceptions/LexingException.h
 
             include/TestBase.h
             tests/TestEngine.cpp include/TestEngine.h
@@ -60,7 +64,11 @@ else()
             src/lexer/Token.cpp include/lexer/Token.h
             src/vm/VirtualMachine.cpp include/vm/VirtualMachine.h
             src/parser/ast/Program.cpp include/parser/ast/Program.h
-            src/vm/FilePool.cpp include/vm/FilePool.h)
+            src/vm/FilePool.cpp include/vm/FilePool.h
+
+            include/exceptions/FileException.h
+            include/exceptions/CustomBaseException.h
+            include/exceptions/LexingException.h)
 endif()
 
 # Add the dependence to the lexenv

@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <cstring>
 
 #include "Config.h"
@@ -23,9 +22,10 @@ void displayHelp(bool full) {
         helpText += "Options :\n";
         helpText += "\t-help (-h) : Display this message\n";
         helpText += "\t-include (-i) : A list of directory to look sources in separated by \";\"\n";
-        helpText += "\t-memory (-m) <size> : Define the WOL heap size in MB\n";
+        helpText += "\t-memory (-m) <size> : Define the WOL maximum heap size in MB (default 256)\n";
         helpText += "\t-log (-l) <log-file> : Write all logs in the specified file\n";
         helpText += "\t-debug (-d) : Set the interpreter to the debug mode\n";
+        helpText += "\t-color (-c) : Enable text color in the console (only on Linux for now)\n";
         helpText += "\t-test-mode (-tm) : Run all the unit tests and exit\n";
     }
 
@@ -71,6 +71,10 @@ void readArgs(int argc, char *argv[]) {
                     include = strtok(nullptr, ";");
                 }
 
+            } else if(currentArg == "-color" || currentArg == "-c") {
+
+                Config::color = true;
+
             } else if(currentArg == "-test-mode" || currentArg == "-tm") {
 
                 Config::testFlag = true;
@@ -108,10 +112,8 @@ int main(int argc, char *argv[]) {
     // Parse arguments
     readArgs(argc, argv);
 
-    // Display the configuration
-    if(Config::debugFlag) {
-        Logger::log_dev("Interpreter configuration :\n" + Config::toString());
-    }
+    // Display the configuration for the dev
+    Logger::log_dev("Interpreter configuration :\n" + Config::toString());
 
     // Display the help and quit if the flags is true
     if(Config::helpFlag) {
@@ -119,15 +121,14 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    // Execute the tests if the flag is on true
+    // Execute the tests if the flag is true
     if(Config::testFlag) {
-        int testResult = TestEngine::run();
-        return testResult;
+        return TestEngine::run();
     }
 
     // Verify that the WOL file exists
     if(!fileExists(Config::wolFile)) {
-        std::cout << "Specified WOL file " << Config::wolFile << " is missing or unreadable" << std::endl;
+        Logger::log_err("Specified WOL file " + Config::wolFile + " is missing or unreadable");
         return 1;
     }
 

@@ -9,12 +9,20 @@
 class Logger {
 private:
 
+    // ----- Attributes -----
+
+    inline const static int RED = 31;
+    inline const static int GREEN = 32;
+    inline const static int YELLOW = 33;
+
+    // ----- Internal methods -----
+
     /**
      * Write a message in the console and the log file if the config say so
      *
      * @param msg The message to log
      */
-    static void write_log(const std::string &msg);
+    static void write_log(const std::string &msg, int fg = 0, int bg = 0);
 
 public:
 

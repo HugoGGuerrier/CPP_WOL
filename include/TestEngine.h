@@ -20,14 +20,6 @@ public:
      * @return The exit code of the tests
      */
     static int run();
-
-    /**
-     * Run a test base (used to polymorphism)
-     *
-     * @param testBase The test to execute
-     * @return The exit code of the test
-     */
-    static int runTest(const TestBase &testBase);
 };
 
 

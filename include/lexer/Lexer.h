@@ -1,8 +1,12 @@
 #ifndef CPP_WOL_LEXER_H
 #define CPP_WOL_LEXER_H
 
+#include <iostream>
 #include <fstream>
 #include <vector>
+#include <memory>
+#include <string>
+
 #include "Token.h"
 
 class Lexer {
@@ -11,16 +15,25 @@ private:
     // ----- Attributes -----
 
     /**
-     * The file to lex
+     * The absolute path of the file to lex
      */
-    std::ifstream *inputFile;
+    std::string file;
 
     /**
      * The lexical result of the wanted file
      */
-    std::vector<Token> *lexResult;
+    std::vector<Token> lexResult;
 
     // ----- Internal methods -----
+
+    /**
+     * Process a string following the lexical environment
+     *
+     * @param stringToProcess The string to process
+     * @param resultToken The token to store the result of processing
+     * @throws LexingException if the string have a lexing exception
+     */
+    void processString(const std::string &stringToProcess, Token &resultToken) const;
 
 public:
 
@@ -31,11 +44,11 @@ public:
      *
      * @param inputFile The pointer to the file you want to lex
      */
-    explicit Lexer(std::ifstream *inputFile);
+    explicit Lexer(const std::string &file);
 
     // ----- Getters -----
 
-    std::vector<Token> & getLexResult();
+    void getLexResult(std::vector<Token> &result) const;
 
     // ----- Class methods -----
 
@@ -44,8 +57,7 @@ public:
      *
      * @return 0 if the lexing worked, 1 else
      */
-    int doLex();
-
+    void doLex();
 };
 
 #endif // CPP_WOL_LEXER_H

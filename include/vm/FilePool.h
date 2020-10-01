@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <string>
 
-#include "Program.h"
+#include "parser/ast/Program.h"
 
 /**
  * This class contains all imported files and their AST to avoid importing multiple imports

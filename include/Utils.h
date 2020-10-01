@@ -2,6 +2,9 @@
 #define CPP_WOL_UTILS_H
 
 #include <iostream>
+#include <string>
+#include <vector>
+#include <lexer/Token.h>
 
 /**
  * Get the string representation of a boolean
@@ -17,6 +20,6 @@ std::string btos(bool b);
  * @param file The file to verify
  * @return True if the file is readable
  */
-bool fileExists(const std::string& file);
+bool fileExists(const std::string &file);
 
-#endif //CPP_WOL_UTILS_H
+#endif // CPP_WOL_UTILS_H
