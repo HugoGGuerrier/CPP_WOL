@@ -1,8 +1,10 @@
-ONE_LINE_COMMENT:\/\/.*\R
+BLANK:[\s|\t]*
+
+ONE_LINE_COMMENT:\/\/.*
 COMMENT_START:\/\*
 COMMENT_END:\*\/
 
-SEMICOLON:[;]
+SEMICOLON:\;
 DOUBLE_DOT:[:]
 COMMA:[,]
 DOT:[\.]
@@ -40,11 +42,11 @@ ARRAY_TYPE:array
 NODE_TYPE:node
 INTERN_TYPE:intern
 
-IDENTIFIER:[a-zA-Z_][a-zA-Z0-9_]*
-
 TRUE_VAL:true
 FALSE_VAL:false
 NULL_VAL:null|NULL
+
 NUMBER_VAL:\-?[0-9]+(\.?[0-9])?[0-9]*
+IDENTIFIER:[a-zA-Z_][a-zA-Z0-9_]*
 CHAR_VAL:\'.\'
 STRING_VAL:\".*\"

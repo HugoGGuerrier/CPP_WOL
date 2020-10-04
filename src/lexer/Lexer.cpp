@@ -1,3 +1,5 @@
+#include <regex>
+
 #include "lexer/Lexer.h"
 #include "Lexenv.h"
 
@@ -13,11 +15,13 @@ Lexer::Lexer(const std::string &file) {
 // ----- Internal methods -----
 
 int Lexer::processString(const std::string &stringToProcess) const {
+    for(int i = 0; i < Lexenv::symbolNumber; i++) {
+        if(std::regex_match(stringToProcess, std::regex(Lexenv::regexArray[i]))) return i;
+    }
     return -1;
 }
 
 void Lexer::addToken(int tokenId, int startPos, int endPos, int line) {
-    std::cout << std::to_string(tokenId) << std::endl;
     // TODO
 }
 
@@ -57,7 +61,7 @@ void Lexer::doLex() {
         // For each char, buf it into a string an extract tokens from it
         for(int i = 0; i < line.size(); i++) {
 
-            // Construct the new string and process it
+            // Construct the new string and process it (ignore blank)
             lineBuffer.append(line.substr(i, 1));
             int processResult = this->processString(lineBuffer);
 
@@ -66,17 +70,22 @@ void Lexer::doLex() {
                 lastTokenFound = processResult;
             } else {
                 if(lastTokenFound != -1) {
-                    this->addToken(lastTokenFound, startPos, i, currentLine);
+                    this->addToken(lastTokenFound, startPos, i + 1, currentLine);
                     lineBuffer.clear();
                     lastTokenFound = -1;
-                    startPos = i;
+                    i--;
+                    startPos = i + 1;
                 }
             }
 
         }
 
         // Verify that all the line was lexed
-        if(!lineBuffer.empty()) {
+        int processResult = this->processString(lineBuffer);
+        if(processResult != -1) {
+            this->addToken(processResult, startPos, line.size() - 1, currentLine);
+            lineBuffer.clear();
+        } else {
             throw LexingException("Lexer", "doLex", "Unknown symbol in source file : " + this->file + " at line " + std::to_string(currentLine) + ":" + std::to_string(startPos) + ". Cannot continue lexing.");
         }
 
@@ -86,4 +95,5 @@ void Lexer::doLex() {
     }
 
     // Close the file
+    fileToLex.close();
 }

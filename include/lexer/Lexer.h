@@ -62,7 +62,6 @@ public:
     /**
      * Start the lexing
      *
-     * @return 0 if the lexing worked, 1 else
      * @throws FileException If the file is unreadable
      * @throws LexingException If the file contains unlexable tokens
      */

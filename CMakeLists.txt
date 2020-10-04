@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 17)
 set(BUILD_FOR_DEV TRUE)
 
-# Set the compile variable
+# Set the compile variablesudo
 set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
 set(LEXER_DIR ${CMAKE_SOURCE_DIR}/src/lexer)
 set(LEXENV_CREATOR_DIR ${LEXER_DIR}/lexenv_creator)
