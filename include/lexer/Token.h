@@ -34,7 +34,7 @@ private:
     /**
      * The value of the token (used for identifiers, classes, attributes...)
      */
-    std::string value;
+    const char *value;
 
 public:
 
@@ -62,7 +62,9 @@ public:
 
     [[nodiscard]] int getEndPos() const;
 
-    [[nodiscard]] std::string getValue() const;
+    [[nodiscard]] const char *getValue() const;
+
+    [[nodiscard]] const char *getName() const;
 
     // ----- Setters -----
 
@@ -74,16 +76,7 @@ public:
 
     void setEndPos(int endPos);
 
-    void setValue(const std::string &value);
-
-    // ----- Class methods -----
-
-    /**
-     * Get the string representation of the token with its value if it exists
-     *
-     * @return The String representation
-     */
-    [[nodiscard]] std::string toString() const;
+    void setValue(const char *value);
 };
 
 #endif // CPP_WOL_TOKEN_H

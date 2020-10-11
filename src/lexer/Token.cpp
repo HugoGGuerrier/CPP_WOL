@@ -8,7 +8,7 @@ Token::Token(int id) {
     this->line = -1;
     this->startPos = -1;
     this->endPos = -1;
-    this->value = std::string();
+    this->value = nullptr;
 }
 
 // ----- Getters -----
@@ -29,8 +29,15 @@ int Token::getEndPos() const {
     return this->endPos;
 }
 
-std::string Token::getValue() const {
+const char *Token::getValue() const {
     return this->value;
+}
+
+const char *Token::getName() const {
+    if(this->id != -1) {
+        return Lexenv::nameArray[this->id];
+    }
+    return nullptr;
 }
 
 // ----- Setters -----
@@ -51,19 +58,6 @@ void Token::setEndPos(int ep) {
     this->endPos = ep;
 }
 
-void Token::setValue(const std::string &v) {
+void Token::setValue(const char *v) {
     this->value = v;
-}
-
-// ----- Class methods -----
-
-std::string Token::toString() const {
-    std::string res;
-    res = Lexenv::nameArray[this->id];
-
-    if(!this->value.empty()) {
-        res += "=" + this->value;
-    }
-
-    return res;
 }

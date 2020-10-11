@@ -1,10 +1,54 @@
 #include <regex>
+#include <cstdio>
+#include <cstdlib>
 
 #include "lexer/Lexer.h"
 #include "Lexenv.h"
 
 #include "exceptions/FileException.h"
 #include "exceptions/LexingException.h"
+
+// ----- Static fields -----
+
+const char *Lexer::stopString[17] = {
+        ";",
+        ":",
+        ",",
+        ".",
+        "=",
+        "+",
+        "-",
+        "*",
+        "/",
+        "<",
+        ">",
+        "{",
+        "}",
+        "[",
+        "]",
+        "(",
+        ")"
+};
+
+const int Lexer::stopCodes[17] = {
+        Lexenv::SEMICOLON,
+        Lexenv::DOUBLE_DOT,
+        Lexenv::COMMA,
+        Lexenv::DOT,
+        Lexenv::EQ,
+        Lexenv::PLUS,
+        Lexenv::MINUS,
+        Lexenv::TIMES,
+        Lexenv::DIVIDE,
+        Lexenv::LESS,
+        Lexenv::MORE,
+        Lexenv::LCURLY,
+        Lexenv::RCURLY,
+        Lexenv::LBRACKET,
+        Lexenv::RBRACKET,
+        Lexenv::LPAREN,
+        Lexenv::RPAREN
+};
 
 // ----- Constructors -----
 
@@ -14,15 +58,13 @@ Lexer::Lexer(const std::string &file) {
 
 // ----- Internal methods -----
 
-int Lexer::processString(const std::string &stringToProcess) const {
-    for(int i = 0; i < Lexenv::symbolNumber; i++) {
-        if(std::regex_match(stringToProcess, std::regex(Lexenv::regexArray[i]))) return i;
-    }
-    return -1;
-}
-
-void Lexer::addToken(int tokenId, int startPos, int endPos, int line) {
-    // TODO
+void Lexer::addToken(int tokenId, int startPos, int endPos, int line, const char *value) {
+    auto newToken = std::make_unique<Token>(Token(tokenId));
+    newToken->setStartPos(startPos);
+    newToken->setEndPos(endPos);
+    newToken->setLine(line);
+    newToken->setValue(value);
+    this->lexResult.emplace_back();
 }
 
 // ----- Getters -----
@@ -38,62 +80,28 @@ void Lexer::getLexResult(std::vector<Token> &result) const {
 // ----- Class methods -----
 
 void Lexer::doLex() {
-    // Open the file to lex
-    std::ifstream fileToLex;
-    fileToLex.open(this->file);
+    // Verify if the file was already lexed
+    if(this->lexResult.empty()) {
 
-    // Verify the file
-    if(!fileToLex.is_open()) {
-        throw FileException("Lexer", "doLex", "File " + this->file + " is missing or unreadable. Cannot continue lexing.");
-    }
+        // Open the file to lex
+        FILE *fileToLex;
+        fopen(this->file.c_str(), "r");
 
-    // Process each line
-    std::string line;
-    int currentLine = 1;
+        fileToLex.open(this->file);
 
-    while(std::getline(fileToLex, line)) {
-
-        // Create the line buffer to extract tokens from the line with the position
-        std::string lineBuffer;
-        int lastTokenFound = -1;
-        int startPos = 1;
-
-        // For each char, buf it into a string an extract tokens from it
-        for(int i = 0; i < line.size(); i++) {
-
-            // Construct the new string and process it (ignore blank)
-            lineBuffer.append(line.substr(i, 1));
-            int processResult = this->processString(lineBuffer);
-
-            // Verify the process result
-            if(processResult != -1) {
-                lastTokenFound = processResult;
-            } else {
-                if(lastTokenFound != -1) {
-                    this->addToken(lastTokenFound, startPos, i + 1, currentLine);
-                    lineBuffer.clear();
-                    lastTokenFound = -1;
-                    i--;
-                    startPos = i + 1;
-                }
-            }
-
+        // Verify the file
+        if(!fileToLex.is_open()) {
+            throw FileException("Lexer", "doLex", "File " + this->file + " is missing or unreadable. Cannot continue lexing.");
         }
 
-        // Verify that all the line was lexed
-        int processResult = this->processString(lineBuffer);
-        if(processResult != -1) {
-            this->addToken(processResult, startPos, line.size() - 1, currentLine);
-            lineBuffer.clear();
-        } else {
-            throw LexingException("Lexer", "doLex", "Unknown symbol in source file : " + this->file + " at line " + std::to_string(currentLine) + ":" + std::to_string(startPos) + ". Cannot continue lexing.");
-        }
+        // Get the full code
 
-        // Increase line counter
-        currentLine++;
+        // TODO : Use low level function fopen() to read the file char by char
+
+        // TODO : Do the lexing process and store it into the lexing result
+
+        // Close the file
+        fileToLex.close();
 
     }
-
-    // Close the file
-    fileToLex.close();
 }

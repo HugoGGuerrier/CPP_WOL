@@ -19,13 +19,6 @@ public:
     // ----- Constructors -----
 
     /**
-     * Init the interpreter with a WOL file
-     *
-     * @param initialFile
-     */
-    VirtualMachine(std::ifstream initialFile);
-
-    /**
      * Create an empty interpreter
      */
     VirtualMachine();

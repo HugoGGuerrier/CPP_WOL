@@ -22,4 +22,15 @@ std::string btos(bool b);
  */
 bool fileExists(const std::string &file);
 
+// ----- Vector displaying functions -----
+
+/**
+ * Display a vector
+ *
+ * @param vector The vector to display
+ * @param newLine If you want to make a new line at each element
+ * @return The string representation of the vector
+ */
+std::string vectos(const std::vector<std::string> &vector, bool newLine);
+
 #endif // CPP_WOL_UTILS_H

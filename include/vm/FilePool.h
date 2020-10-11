@@ -15,7 +15,6 @@ private:
     /**
      * The map that associate files with their programs
      */
-    static std::unordered_map<std::string, Program>;
 
 public:
 };

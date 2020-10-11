@@ -22,8 +22,8 @@ public:
     inline static bool testFlag = false;
     inline static std::string logFile = std::string();
     inline static std::string wolFile = std::string();
-    inline static std::vector<std::string> wolArgs = std::vector<std::string>();
-    inline static std::vector<std::string> includePaths = std::vector<std::string>();
+    inline static std::vector<char *> wolArgs = std::vector<char *>();
+    inline static std::vector<char *> includePaths = std::vector<char *>();
     inline static int heapSize = 256;
 
     // ----- Class methods -----

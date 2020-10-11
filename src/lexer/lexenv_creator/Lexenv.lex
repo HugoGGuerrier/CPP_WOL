@@ -1,17 +1,17 @@
-BLANK:[\s|\t]*
-
 ONE_LINE_COMMENT:\/\/.*
 COMMENT_START:\/\*
 COMMENT_END:\*\/
 
 SEMICOLON:\;
-DOUBLE_DOT:[:]
-COMMA:[,]
+DOUBLE_DOT:[\:]
+COMMA:[\,]
 DOT:[\.]
-EQ:[=]
-EQEQ:==
+EQ:[\=]
+EQEQ:\=\=
 PLUS:[\+]
 MINUS:[\-]
+TIMES:[\*]
+DIVIDE:[\/]
 LESS:[\<]
 MORE:[\>]
 

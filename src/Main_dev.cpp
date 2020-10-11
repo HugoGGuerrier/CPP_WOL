@@ -87,7 +87,7 @@ void readArgs(int argc, char *argv[]) {
             if(Config::wolFile.empty()) {
                 Config::wolFile = currentArg;
             } else {
-                Config::wolArgs.emplace_back(currentArg);
+                Config::wolArgs.emplace_back(currentArg.data());
             }
 
         }
