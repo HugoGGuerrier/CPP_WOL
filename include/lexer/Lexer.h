@@ -69,6 +69,14 @@ private:
     static int getStopCharCode(char charToTest);
 
     /**
+     * Test if a string is in the lexical environment
+     *
+     * @param strToTest The string to test
+     * @return The lexical token code, -1 if not in the lexical environment
+     */
+    static int getLexicalTokenCode(char *strToTest);
+
+    /**
      * Add a token with the wanted ID to the lex result
      *
      * @param tokenId The ID of the token to add

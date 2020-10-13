@@ -1,24 +1,25 @@
-BLANK:[ |\t|\0|\n|\r]
+-BLANK:[ |\t|\0|\n|\r]
 
-SEMICOLON:\;
-DOUBLE_DOT:[\:]
-COMMA:[\,]
-DOT:[\.]
-EQ:[\=]
+-SEMICOLON:;
+-DOUBLE_DOT::
+-COMMA:,
+-DOT:.
+-EQ:=
+-PLUS:+
+-MINUS:-
+-TIMES:*
+-DIVIDE:/
+-LESS:<
+-MORE:>
+
+-LCURLY:{
+-RCURLY:}
+-LBRACKET:[
+-RBRACKET:]
+-LPAREN:(
+-RPAREN:)
+
 EQEQ:\=\=
-PLUS:[\+]
-MINUS:[\-]
-TIMES:[\*]
-DIVIDE:[\/]
-LESS:[\<]
-MORE:[\>]
-
-LCURLY:[{]
-RCURLY:[}]
-LBRACKET:[\[]
-RBRACKET:[\]]
-LPAREN:[(]
-RPAREN:[)]
 
 CLASS:class
 PRIVATE:private

@@ -76,6 +76,10 @@ int Lexer::getStopCharCode(char charToTest) {
     return -1;
 }
 
+int Lexer::getLexicalTokenCode(char *strToTest) {
+    return 0;
+}
+
 void Lexer::addToken(int tokenId, int startPos, int endPos, int line, const char *value) {
     auto newToken = std::make_unique<Token>(Token(tokenId));
     newToken->setStartPos(startPos);
@@ -115,15 +119,28 @@ void Lexer::doLex() {
         char *buffer = (char *)malloc(Config::maxWordSize * sizeof(char));
         int currentState = Lexer::NORMAL_STATE;
 
+        int bufferPointer = 0;
         int currentLine = 1;
         int currentPos = 1;
 
         while((nextChar = fgetc(fileToLex)) != EOF) {
             if(currentState == Lexer::NORMAL_STATE) {
+
                 int stopCharCode = this->getStopCharCode(nextChar);
                 if(stopCharCode != -1) {
 
+                    // If the char is a stop char
+                    if(bufferPointer != 0) {
+                        int tokenCode = Lexer::getLexicalTokenCode(buffer);
+                    }
+
+                } else {
+
+                    // If the char isn't a stop char, just put it into the buffer
+                    buffer[bufferPointer] = nextChar;
+
                 }
+
             } else if(currentState == Lexer::ONE_LINE_COMMENT_STATE) {
 
             } else if(currentState == Lexer::MULTI_LINE_COMMENT_STATE) {

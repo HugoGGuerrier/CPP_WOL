@@ -4,9 +4,16 @@
 #include <string>
 #include <memory>
 
+std::vector<std::string> stopCharNameVector;
+std::vector<std::string> stopCharsVector;
+
 std::vector<std::string> symbolNameVector;
 std::vector<std::string> symbolRegexVector;
+
 int symbolNumber = 0;
+int regexNumber = 0;
+
+// TODO : Export all stop chars in an array
 
 /**
  * Function to use to parse the lex file and fill the vectors
@@ -22,12 +29,28 @@ void parseLexFile(std::ifstream &lexFile) {
         int delimiterPosition = line.find(':');
 
         if(delimiterPosition != -1) {
-            std::string tokenName = line.substr(0, delimiterPosition);
-            std::string tokenRegex = line.substr(delimiterPosition + 1, line.length());
+            if(line[0] == '-') {
 
-            // Place the token definition in the wanted vectors
-            symbolNameVector.emplace_back(tokenName);
-            symbolRegexVector.emplace_back(tokenRegex);
+                std::string stopCharName = line.substr(1, delimiterPosition - 1);
+                std::string stopChars = line.substr(delimiterPosition + 1, line.length() - delimiterPosition);
+
+                // Place the stop char in the vector
+                stopCharNameVector.emplace_back(stopCharName);
+                stopCharsVector.emplace_back(stopChars);
+
+            } else {
+
+                std::string tokenName = line.substr(0, delimiterPosition);
+                std::string tokenRegex = line.substr(delimiterPosition + 1, line.length() - delimiterPosition);
+
+                // Place the token definition in the wanted vectors
+                symbolNameVector.emplace_back(tokenName);
+                symbolRegexVector.emplace_back(tokenRegex);
+                regexNumber++;
+
+            }
+
+            // Increment number of found symbols
             symbolNumber++;
         }
     }
@@ -39,7 +62,7 @@ void parseLexFile(std::ifstream &lexFile) {
  * @param exportDirectory The directory where you want to export the lexenv
  * @return If the export worked
  */
-int exportLexEnv(const std::string & exportDirectory) {
+int exportLexEnv(const std::string &exportDirectory) {
     // Open the two export files
     std::ofstream cppExport;
     std::ofstream hExport;
@@ -52,50 +75,71 @@ int exportLexEnv(const std::string & exportDirectory) {
     // --- Export the H part
 
     // Prepare the H string
-    std::unique_ptr<std::string> hExportString(new std::string);
-    *hExportString += "#ifndef CPP_WOL_LEXENV_H\n#define CPP_WOL_LEXENV_H\n\nclass Lexenv {\npublic:\n\tconst static char *regexArray[];\n\tconst static char *nameArray[];\n";
+    std::string hExportString;
+    hExportString += "#ifndef CPP_WOL_LEXENV_H\n#define CPP_WOL_LEXENV_H\n\nclass Lexenv {\npublic:\n\tconst static char *regexArray[];\n\tconst static int regexCode[];\n\tconst static char *nameArray[];\n";
 
     // Export static fields
-    *hExportString += "\tconst static int symbolNumber = " + std::to_string(symbolNumber) + ";\n\n";
+    hExportString += "\n\tinline const static int symbolNumber = " + std::to_string(symbolNumber) + ";\n";
+    hExportString += "\tinline const static int regexNumber = " + std::to_string(regexNumber) + ";\n\n";
 
-    for(int i = 0; i < symbolNameVector.size(); i++) {
-        *hExportString += "\tconst static int " + symbolNameVector[i] + " = " + std::to_string(i) + ";\n";
+    for(int i = 0; i < symbolNumber; i++) {
+        if(i < stopCharNameVector.size()) {
+            hExportString += "\tinline const static int " + stopCharNameVector[i] + " = " + std::to_string(i) + ";\n";
+        } else {
+            hExportString += "\tinline const static int " + symbolNameVector[i - stopCharNameVector.size()] + " = " + std::to_string(i) + ";\n";
+        }
     }
 
     // Finalize the H file
-    *hExportString += "};\n\n#endif";
+    hExportString += "};\n\n#endif";
 
     // Export the H file
-    hExport << *hExportString;
+    hExport << hExportString;
     hExport.close();
 
     // --- Export the CPP part
+
+    // Include the h file
     cppExport << "#include \"Lexenv.h\"\n\n";
 
     // Prepare the export strings
-    std::unique_ptr<std::string> nameArrayString(new std::string());
-    std::unique_ptr<std::string> regexArrayString(new std::string());
-
-    // Define regex and name arrays
-    *nameArrayString += "const char *Lexenv::nameArray[" + std::to_string(symbolNameVector.size()) + "] = {";
-    *regexArrayString += "const char *Lexenv::regexArray[" + std::to_string(symbolRegexVector.size()) + "] = {";
+    std::string nameArrayString = "const char *Lexenv::nameArray[" + std::to_string(symbolNumber) + "] = {";
+    std::string regexArrayString = "const char *Lexenv::regexArray[" + std::to_string(regexNumber) + "] = {";
+    std::string regexCodeArrayString = "const int Lexenv::regexCode[" + std::to_string(regexNumber) + "] = {";
 
     // Export all values
-    for(int i = 0; i < symbolNameVector.size(); i++) {
-        // Add the name and the regex
-        *nameArrayString += "\"" + symbolNameVector[i] + "\"";
-        *regexArrayString += "R\"(" + symbolRegexVector[i] + ")\"";
+    for(int i = 0; i < symbolNumber; i++) {
+        if(i < stopCharNameVector.size()) {
 
-        if(i < symbolNameVector.size() - 1) {
-            *nameArrayString += ", ";
-            *regexArrayString += ", ";
+            nameArrayString += "\"" + stopCharNameVector[i] + "\"";
+
+            if(i < symbolNumber - 1) {
+                nameArrayString += ", ";
+            }
+
+        } else {
+            unsigned int j = i - stopCharNameVector.size();
+
+            nameArrayString += "\"" + symbolNameVector[j] + "\"";
+            regexArrayString += "R\"(" + symbolRegexVector[j] + ")\"";
+            regexCodeArrayString += "Lexenv::" + symbolNameVector[i - stopCharNameVector.size()];
+
+            if(i < symbolNumber - 1) {
+                nameArrayString += ", ";
+                regexArrayString += ", ";
+                regexCodeArrayString += ", ";
+            }
+
         }
     }
-    *nameArrayString += "};\n";
-    *regexArrayString += "};\n";
+
+    // Close the exported arrays
+    nameArrayString += "};\n\n";
+    regexArrayString += "};\n";
+    regexCodeArrayString += "};\n";
 
     // Write the cpp file
-    cppExport << *nameArrayString << *regexArrayString;
+    cppExport << nameArrayString << regexArrayString << regexCodeArrayString;
     cppExport.close();
 
     // Return the success
