@@ -14,6 +14,8 @@ private:
 
     // ----- Attributes -----
 
+    // --- Instance
+
     /**
      * The absolute path of the file to lex
      */
@@ -24,17 +26,47 @@ private:
      */
     std::vector<Token> lexResult;
 
+    // --- Static
+
     /**
      * Array that contains all expressions to stop the lecture head and optimize the lexical anlysis
      */
-    const static char* stopString[];
+    const static char stopChars[];
 
     /**
      * All the stop string token codes to avoid searching in the lexical environment
      */
     const static int stopCodes[];
 
+    /**
+     * The number of stop characters
+     */
+    inline const static int stopCharsNumber = 22;
+
+    /**
+     * Normal state of the lexer
+     */
+    inline const static int NORMAL_STATE = 0;
+
+    /**
+     * When you encounter a one line comment
+     */
+    inline const static int ONE_LINE_COMMENT_STATE = 1;
+
+    /**
+     * When you encounter a multi line comment
+     */
+    inline const static int MULTI_LINE_COMMENT_STATE = 2;
+
     // ----- Internal methods -----
+
+    /**
+     * Test if a char is a stop character in the lexical analysis
+     *
+     * @param charToTest The char to test
+     * @return The character code to simplify lexical analysis, -1 if it's not
+     */
+    static int getStopCharCode(char charToTest);
 
     /**
      * Add a token with the wanted ID to the lex result

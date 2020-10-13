@@ -24,7 +24,8 @@ public:
     inline static std::string wolFile = std::string();
     inline static std::vector<char *> wolArgs = std::vector<char *>();
     inline static std::vector<char *> includePaths = std::vector<char *>();
-    inline static int heapSize = 256;
+    inline static int allocatedMemory = 256;
+    inline static int maxWordSize = 128;
 
     // ----- Class methods -----
 

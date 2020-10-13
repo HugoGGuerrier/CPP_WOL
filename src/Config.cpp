@@ -30,7 +30,7 @@ std::string Config::toString() {
     }
     res += includePathsString + ">" + "\n";
 
-    res += "\twolSize = " + std::to_string(Config::heapSize) + "";
+    res += "\twolSize = " + std::to_string(Config::allocatedMemory) + "";
 
     return res;
 }

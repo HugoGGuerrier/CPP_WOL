@@ -1,6 +1,7 @@
 #include <regex>
 #include <cstdio>
 #include <cstdlib>
+#include <Config.h>
 
 #include "lexer/Lexer.h"
 #include "Lexenv.h"
@@ -10,27 +11,37 @@
 
 // ----- Static fields -----
 
-const char *Lexer::stopString[17] = {
-        ";",
-        ":",
-        ",",
-        ".",
-        "=",
-        "+",
-        "-",
-        "*",
-        "/",
-        "<",
-        ">",
-        "{",
-        "}",
-        "[",
-        "]",
-        "(",
-        ")"
+const char Lexer::stopChars[22] = {
+        ' ',
+        '\t',
+        '\0',
+        '\n',
+        '\r',
+        ';',
+        ':',
+        ',',
+        '.',
+        '=',
+        '+',
+        '-',
+        '*',
+        '/',
+        '<',
+        '>',
+        '{',
+        '}',
+        '[',
+        ']',
+        '(',
+        ')'
 };
 
-const int Lexer::stopCodes[17] = {
+const int Lexer::stopCodes[22] = {
+        Lexenv::BLANK,
+        Lexenv::BLANK,
+        Lexenv::BLANK,
+        Lexenv::BLANK,
+        Lexenv::BLANK,
         Lexenv::SEMICOLON,
         Lexenv::DOUBLE_DOT,
         Lexenv::COMMA,
@@ -58,6 +69,13 @@ Lexer::Lexer(const std::string &file) {
 
 // ----- Internal methods -----
 
+int Lexer::getStopCharCode(char charToTest) {
+    for(int i = 0; i < Lexer::stopCharsNumber; i++) {
+        if(charToTest == Lexer::stopChars[i]) return Lexer::stopCodes[i];
+    }
+    return -1;
+}
+
 void Lexer::addToken(int tokenId, int startPos, int endPos, int line, const char *value) {
     auto newToken = std::make_unique<Token>(Token(tokenId));
     newToken->setStartPos(startPos);
@@ -84,24 +102,41 @@ void Lexer::doLex() {
     if(this->lexResult.empty()) {
 
         // Open the file to lex
-        FILE *fileToLex;
-        fopen(this->file.c_str(), "r");
-
-        fileToLex.open(this->file);
+        FILE *fileToLex = nullptr;
+        fileToLex = fopen(this->file.c_str(), "r");
 
         // Verify the file
-        if(!fileToLex.is_open()) {
+        if(fileToLex == nullptr) {
             throw FileException("Lexer", "doLex", "File " + this->file + " is missing or unreadable. Cannot continue lexing.");
         }
 
-        // Get the full code
+        // Initialize the lexical analysis
+        char nextChar;
+        char *buffer = (char *)malloc(Config::maxWordSize * sizeof(char));
+        int currentState = Lexer::NORMAL_STATE;
+
+        int currentLine = 1;
+        int currentPos = 1;
+
+        while((nextChar = fgetc(fileToLex)) != EOF) {
+            if(currentState == Lexer::NORMAL_STATE) {
+                int stopCharCode = this->getStopCharCode(nextChar);
+                if(stopCharCode != -1) {
+
+                }
+            } else if(currentState == Lexer::ONE_LINE_COMMENT_STATE) {
+
+            } else if(currentState == Lexer::MULTI_LINE_COMMENT_STATE) {
+
+            }
+        }
 
         // TODO : Use low level function fopen() to read the file char by char
 
         // TODO : Do the lexing process and store it into the lexing result
 
         // Close the file
-        fileToLex.close();
+        fclose(fileToLex);
 
     }
 }

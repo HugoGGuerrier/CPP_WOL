@@ -1,6 +1,4 @@
-ONE_LINE_COMMENT:\/\/.*
-COMMENT_START:\/\*
-COMMENT_END:\*\/
+BLANK:[ |\t|\0|\n|\r]
 
 SEMICOLON:\;
 DOUBLE_DOT:[\:]

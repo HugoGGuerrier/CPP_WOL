@@ -1,4 +1,4 @@
-#include <fstream>
+#include <cstdlib>
 #include <memory>
 
 #include "Utils.h"
@@ -8,15 +8,9 @@ std::string btos(const bool b) {
 }
 
 bool fileExists(const std::string &file) {
-    std::unique_ptr<std::ifstream> fileStream = std::make_unique<std::ifstream>(std::ifstream(file));
-    if(!file.empty()) {
-        fileStream->open(file);
-        if(fileStream->is_open()) {
-            fileStream->close();
-            return true;
-        }
-    }
-    return false;
+    FILE *fileToTest = nullptr;
+    fileToTest = fopen(file.c_str(), "r");
+    return fileToTest != nullptr;
 }
 
 // ----- Vector displaying functions -----

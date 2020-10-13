@@ -32,6 +32,7 @@ if(${BUILD_FOR_DEV})
 
     # Create the dev executable
     add_executable(cpp_wol src/Main_dev.cpp
+            src/Main_common.cpp include/Main_common.h
             src/Config.cpp include/Config.h
             src/Logger.cpp include/Logger.h
             src/Utils.cpp include/Utils.h
@@ -58,6 +59,7 @@ else()
 
     # Create the prod executable
     add_executable(cpp_wol src/Main_prod.cpp
+            src/Main_common.cpp include/Main_common.h
             src/Config.cpp include/Config.h
             src/Logger.cpp include/Logger.h
             src/Utils.cpp include/Utils.h
