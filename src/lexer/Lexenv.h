@@ -3,11 +3,16 @@
 
 class Lexenv {
 public:
-	const static char *regexArray[];
-	const static int regexCode[];
 	const static char *nameArray[];
 
+	const static char stopCharArray[];
+	const static int stopCharCode[];
+
+	const static char *regexArray[];
+	const static int regexCode[];
+
 	inline const static int symbolNumber = 43;
+	inline const static int stopCharNumber = 18;
 	inline const static int regexNumber = 25;
 
 	inline const static int BLANK = 0;
