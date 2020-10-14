@@ -9,58 +9,6 @@
 #include "exceptions/FileException.h"
 #include "exceptions/LexingException.h"
 
-// ----- Static fields -----
-
-const char Lexer::stopChars[22] = {
-        ' ',
-        '\t',
-        '\0',
-        '\n',
-        '\r',
-        ';',
-        ':',
-        ',',
-        '.',
-        '=',
-        '+',
-        '-',
-        '*',
-        '/',
-        '<',
-        '>',
-        '{',
-        '}',
-        '[',
-        ']',
-        '(',
-        ')'
-};
-
-const int Lexer::stopCodes[22] = {
-        Lexenv::BLANK,
-        Lexenv::BLANK,
-        Lexenv::BLANK,
-        Lexenv::BLANK,
-        Lexenv::BLANK,
-        Lexenv::SEMICOLON,
-        Lexenv::DOUBLE_DOT,
-        Lexenv::COMMA,
-        Lexenv::DOT,
-        Lexenv::EQ,
-        Lexenv::PLUS,
-        Lexenv::MINUS,
-        Lexenv::TIMES,
-        Lexenv::DIVIDE,
-        Lexenv::LESS,
-        Lexenv::MORE,
-        Lexenv::LCURLY,
-        Lexenv::RCURLY,
-        Lexenv::LBRACKET,
-        Lexenv::RBRACKET,
-        Lexenv::LPAREN,
-        Lexenv::RPAREN
-};
-
 // ----- Constructors -----
 
 Lexer::Lexer(const std::string &file) {
@@ -70,8 +18,8 @@ Lexer::Lexer(const std::string &file) {
 // ----- Internal methods -----
 
 int Lexer::getStopCharCode(char charToTest) {
-    for(int i = 0; i < Lexer::stopCharsNumber; i++) {
-        if(charToTest == Lexer::stopChars[i]) return Lexer::stopCodes[i];
+    for(int i = 0; i < Lexenv::stopCharNumber; i++) {
+        if(charToTest == Lexenv::stopCharArray[i]) return Lexenv::stopCharCode[i];
     }
     return -1;
 }
@@ -123,7 +71,9 @@ void Lexer::doLex() {
         int currentLine = 1;
         int currentPos = 1;
 
-        while((nextChar = fgetc(fileToLex)) != EOF) {
+        bool windowsNewlineCompatFlag = false;
+
+        while((nextChar = (char)fgetc(fileToLex)) != EOF) {
             if(currentState == Lexer::NORMAL_STATE) {
 
                 int stopCharCode = this->getStopCharCode(nextChar);
@@ -132,6 +82,8 @@ void Lexer::doLex() {
                     // If the char is a stop char
                     if(bufferPointer != 0) {
                         int tokenCode = Lexer::getLexicalTokenCode(buffer);
+                    } else {
+
                     }
 
                 } else {
@@ -143,10 +95,44 @@ void Lexer::doLex() {
 
             } else if(currentState == Lexer::ONE_LINE_COMMENT_STATE) {
 
+                // If there is a carriage return reset the state to normal
+                if(nextChar == '\n' || nextChar == '\r') {
+                    currentState = Lexer::NORMAL_STATE;
+                }
+
             } else if(currentState == Lexer::MULTI_LINE_COMMENT_STATE) {
 
+                // If there is the end of the comment reset state to normal
+                if(nextChar == '*') {
+                    nextChar = (char)getc(fileToLex);
+                    currentPos++;
+                    if(nextChar == '/') {
+                        currentState = Lexer::NORMAL_STATE;
+                    }
+                }
+
+            }
+
+            // Increase the current position
+            currentPos++;
+
+            // Compatibility with windows written files
+            if(windowsNewlineCompatFlag && nextChar != '\n') {
+                windowsNewlineCompatFlag = false;
+            }
+
+            // Increase the line number
+            if(nextChar == '\n' && !windowsNewlineCompatFlag) {
+                currentPos = 1;
+                currentLine++;
+            } else if(nextChar == '\r') {
+                currentPos = 1;
+                currentLine++;
+                windowsNewlineCompatFlag = true;
             }
         }
+
+        std::cout << std::to_string(currentLine) << ":" << std::to_string(currentPos) << std::endl;
 
         // TODO : Use low level function fopen() to read the file char by char
 

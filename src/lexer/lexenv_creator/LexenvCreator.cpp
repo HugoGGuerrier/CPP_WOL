@@ -2,8 +2,6 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <cstring>
-#include <memory>
 
 std::vector<std::string> symbolNameVector;
 std::vector<std::string> stopCharsVector;

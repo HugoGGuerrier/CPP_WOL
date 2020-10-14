@@ -5,7 +5,10 @@
 
 void TestBase::init(int number) {
     // Allocate the result
-    this->testsStatus = static_cast<int *>(malloc(number * sizeof(int)));
+    this->testsStatus = static_cast<int *>( malloc(number * sizeof(int)) );
+    this->testMessage = static_cast<std::string *>( malloc(number * sizeof(std::string)) );
+    this->testStartTime = static_cast<std::chrono::time_point<std::chrono::system_clock> *>( malloc(number * sizeof(std::chrono::time_point<std::chrono::system_clock>)) );
+    this->testEndTime = static_cast<std::chrono::time_point<std::chrono::system_clock> *>( malloc(number * sizeof(std::chrono::time_point<std::chrono::system_clock>)) );
     this->testNumber = number;
 
     // Fill the result with -1
@@ -14,7 +17,7 @@ void TestBase::init(int number) {
     }
 }
 
-void TestBase::succeedTest(int index) {
+void TestBase::succeedTest(int index, const std::string &message) {
     if(this->testsStatus[index - 1] == -1) {
         this->testsStatus[index - 1] = 0;
     } else {
@@ -22,7 +25,7 @@ void TestBase::succeedTest(int index) {
     }
 }
 
-void TestBase::failTest(int index) {
+void TestBase::failTest(int index, const std::string &message) {
     if(this->testsStatus[index - 1] == -1) {
         this->testsStatus[index - 1] = 1;
     } else {
@@ -53,7 +56,10 @@ int TestBase::verifyTests() {
 // ----- Destructor -----
 
 TestBase::~TestBase() {
-    free(this->testsStatus);
+    free((void *) this->testsStatus);
+    free((void *) this->testMessage);
+    free((void *) this->testStartTime);
+    free((void *) this->testEndTime);
 }
 
 // ----- Class methods -----

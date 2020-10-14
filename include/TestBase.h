@@ -2,6 +2,7 @@
 #define CPP_WOL_TESTBASE_H
 
 #include <vector>
+#include <chrono>
 
 #include "Logger.h"
 
@@ -17,6 +18,21 @@ protected:
      * All tests status code
      */
     int *testsStatus;
+
+    /**
+     * All test messages to display
+     */
+    const std::string *testMessage;
+
+    /**
+     * All tests start times
+     */
+    std::chrono::time_point<std::chrono::system_clock> *testStartTime;
+
+    /**
+     * All test end times
+     */
+    std::chrono::time_point<std::chrono::system_clock> *testEndTime;
 
     /**
      * The number of tests
@@ -37,14 +53,14 @@ protected:
      *
      * @param index The test to success
      */
-    void succeedTest(int index);
+    void succeedTest(int index, const std::string &message = "");
 
     /**
      * Mark a test as failure
      *
      * @param index The test to fail
      */
-    void failTest(int index);
+    void failTest(int index, const std::string &message = "");
 
     /**
      * Function to verify and display all the classes tests

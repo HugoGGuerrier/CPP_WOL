@@ -1,4 +1,4 @@
--BLANK: \t\0\n\r
+-BLANK: \t\0\n\r\R
 
 -SEMICOLON:;
 -DOUBLE_DOT::

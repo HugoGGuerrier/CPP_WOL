@@ -29,21 +29,6 @@ private:
     // --- Static
 
     /**
-     * Array that contains all expressions to stop the lecture head and optimize the lexical anlysis
-     */
-    const static char stopChars[];
-
-    /**
-     * All the stop string token codes to avoid searching in the lexical environment
-     */
-    const static int stopCodes[];
-
-    /**
-     * The number of stop characters
-     */
-    inline const static int stopCharsNumber = 22;
-
-    /**
      * Normal state of the lexer
      */
     inline const static int NORMAL_STATE = 0;
