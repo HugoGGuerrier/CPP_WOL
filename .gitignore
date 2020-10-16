@@ -1,2 +1,3 @@
 .idea
 cmake-build-debug
+src/lexer/lexenv_creator/lexenv_creator
