@@ -1,7 +1,7 @@
 #include <regex>
 #include <cstdio>
 #include <cstdlib>
-#include <Config.h>
+#include <tools/Config.h>
 
 #include "lexer/Lexer.h"
 #include "Lexenv.h"

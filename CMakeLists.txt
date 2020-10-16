@@ -28,14 +28,14 @@ add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/lexer/Lexenv.cpp ${CMAKE_SOURC
 if(${BUILD_FOR_DEV})
     # Set the test dir
     get_filename_component(BASE_PATH ./ ABSOLUTE)
-    configure_file(include/Config.h.temp ../include/Config.h)
+    configure_file(include/tools/Config.h.temp ../include/tools/Config.h)
 
     # Create the dev executable
     add_executable(cpp_wol src/Main_dev.cpp
             src/Main_common.cpp include/Main_common.h
-            src/Config.cpp include/Config.h
-            src/Logger.cpp include/Logger.h
-            src/Utils.cpp include/Utils.h
+            src/tools/Config.cpp include/tools/Config.h
+            src/tools/Logger.cpp include/tools/Logger.h
+            src/tools/Utils.cpp include/tools/Utils.h
             src/lexer/Lexenv.cpp src/lexer/Lexenv.h
             src/lexer/Lexer.cpp include/lexer/Lexer.h
             src/lexer/Token.cpp include/lexer/Token.h
@@ -47,22 +47,21 @@ if(${BUILD_FOR_DEV})
             include/exceptions/FileException.h
             include/exceptions/LexingException.h
 
-            include/TestBase.h
-            tests/TestEngine.cpp include/TestEngine.h
-            tests/LexerTests.cpp tests/LexerTests.h
-            tests/UtilsTests.cpp tests/UtilsTests.h
-            tests/TestBase.cpp)
+            include/tests/TestBase.h src/tests/TestBase.cpp
+            src/tests/TestEngine.cpp include/tests/TestEngine.h
+            src/tests/LexerTests.cpp src/tests/LexerTests.h
+            src/tests/UtilsTests.cpp src/tests/UtilsTests.h)
 else()
     # Set the test dir to void
     set(BASE_PATH "void")
-    configure_file(include/Config.h.temp ../include/Config.h)
+    configure_file(include/tools/Config.h.temp ../include/Config.h)
 
     # Create the prod executable
     add_executable(cpp_wol src/Main_prod.cpp
             src/Main_common.cpp include/Main_common.h
-            src/Config.cpp include/Config.h
-            src/Logger.cpp include/Logger.h
-            src/Utils.cpp include/Utils.h
+            src/tools/Config.cpp include/tools/Config.h
+            src/tools/Logger.cpp include/tools/Logger.h
+            src/tools/Utils.cpp include/tools/Utils.h
             src/lexer/Lexenv.cpp src/lexer/Lexenv.h
             src/lexer/Lexer.cpp include/lexer/Lexer.h
             src/lexer/Token.cpp include/lexer/Token.h

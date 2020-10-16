@@ -1,10 +1,10 @@
 #include <iostream>
 
 #include "Main_common.h"
-#include "Config.h"
-#include "Logger.h"
-#include "Utils.h"
-#include "TestEngine.h"
+#include "tools/Config.h"
+#include "tools/Logger.h"
+#include "tools/Utils.h"
+#include "tests/TestEngine.h"
 
 /**
  * This is the main entry point to the WOL interpreter everything start from here

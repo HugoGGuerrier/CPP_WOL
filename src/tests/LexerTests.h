@@ -5,8 +5,8 @@
 #include <vector>
 #include <lexer/Token.h>
 
-#include "TestBase.h"
-#include "Config.h"
+#include "tests/TestBase.h"
+#include "tools/Config.h"
 
 /**
  * This class contains all tests for the lexer

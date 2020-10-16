@@ -1,4 +1,4 @@
-#include "TestEngine.h"
+#include "tests/TestEngine.h"
 #include "LexerTests.h"
 
 // ----- Class methods -----

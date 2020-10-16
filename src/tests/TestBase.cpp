@@ -1,5 +1,5 @@
-#include "TestBase.h"
-#include "Logger.h"
+#include "tests/TestBase.h"
+#include "tools/Logger.h"
 
 // ----- Internal methods -----
 

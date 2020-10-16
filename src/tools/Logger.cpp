@@ -1,7 +1,7 @@
 #include <fstream>
 
-#include "Logger.h"
-#include "Config.h"
+#include "tools/Logger.h"
+#include "tools/Config.h"
 
 void Logger::write_log(const std::string &msg, int fg, int bg) {
     // Init the result string;

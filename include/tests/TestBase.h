@@ -4,7 +4,7 @@
 #include <vector>
 #include <chrono>
 
-#include "Logger.h"
+#include "tools/Logger.h"
 
 /**
  * This is the base class of any test class

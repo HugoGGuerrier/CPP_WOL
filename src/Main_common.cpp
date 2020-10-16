@@ -2,8 +2,8 @@
 #include <iostream>
 #include <cstring>
 
-#include "Config.h"
-#include "Logger.h"
+#include "tools/Config.h"
+#include "tools/Logger.h"
 
 #include "Main_common.h"
 
@@ -94,15 +94,15 @@ void Main_common::readArgs(int argc, char *argv[], bool dev) {
 
             } else if(strcmp(currentArg, "-debug") == 0 || strcmp(currentArg, "-d") == 0) {
 
-                Config::debugFlag = true;
+                if(dev) Config::debugFlag = true;
 
             } else if(strcmp(currentArg, "-color") == 0 || strcmp(currentArg, "-c") == 0) {
 
-                Config::color = true;
+                if(dev) Config::color = true;
 
             } else if(strcmp(currentArg, "-test-mode") == 0 || strcmp(currentArg, "-tm") == 0) {
 
-                Config::testFlag = true;
+                if(dev) Config::testFlag = true;
 
             }
 
