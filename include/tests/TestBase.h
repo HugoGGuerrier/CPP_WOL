@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <chrono>
+#include <ctime>
 
 #include "tools/Logger.h"
 
@@ -22,17 +23,17 @@ protected:
     /**
      * All test messages to display
      */
-    const std::string *testMessage;
+    std::vector<std::string> testMessage;
 
     /**
      * All tests start times
      */
-    std::chrono::time_point<std::chrono::system_clock> *testStartTime;
+    clock_t *testStartTime;
 
     /**
      * All test end times
      */
-    std::chrono::time_point<std::chrono::system_clock> *testEndTime;
+    clock_t *testEndTime;
 
     /**
      * The number of tests
@@ -47,6 +48,13 @@ protected:
      * @param number The number of tests
      */
     void init(int number);
+
+    /**
+     * Set the start time of a test to the current time
+     *
+     * @param index The test to start
+     */
+    void startTest(int index);
 
     /**
      * Mark a test as success

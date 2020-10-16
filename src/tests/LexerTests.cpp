@@ -1,9 +1,7 @@
-#include <memory>
-
 #include "LexerTests.h"
 #include "lexer/Lexer.h"
 
-#include <exceptions/LexingException.h>
+#include "exceptions/LexingException.h"
 #include "exceptions/FileException.h"
 
 // ----- Constructors -----
@@ -16,29 +14,30 @@ LexerTests::LexerTests() {
 
 int LexerTests::run(){
     // Create the lexers for the tests
-    auto lexer1 = std::make_unique<Lexer>(Lexer(LexerTests::testFile1));
-    auto lexer2 = std::make_unique<Lexer>(Lexer(LexerTests::testFile2));
+    Lexer lexer1(LexerTests::testFile1);
+    Lexer lexer2(LexerTests::testFile2);
 
     // --- Run the test 1 that should succeed
 
     try {
 
-        // Lex the file
-        lexer1->doLex();
+        // Start the test 1
+        this->startTest(1);
 
-        this->succeedTest(1);
+        // Lex the file
+        lexer1.doLex();
+
+        this->succeedTest(1, "File successfully lexed !");
 
     } catch (FileException &e) {
 
-        // Log the exception in the logger
-        Logger::log_test_err(e.what());
-        this->failTest(1);
+        // Fail the test
+        this->failTest(1, e.what());
 
     } catch (LexingException &e) {
 
-        // Log the exception in the logger
-        Logger::log_test_err(e.what());
-        this->failTest(1);
+        // Fail the test
+        this->failTest(1, e.what());
 
     }
 
@@ -46,11 +45,14 @@ int LexerTests::run(){
 
     try {
 
+        // Start the test
+        this->startTest(2);
+
         // Lex the file
-        lexer2->doLex();
+        lexer2.doLex();
 
         // If this code is executed that the Lexer failed
-        this->failTest(2);
+        this->failTest(2, "Expected to fail lexing !");
 
     } catch (LexingException &e) {
 
@@ -60,8 +62,7 @@ int LexerTests::run(){
     } catch (FileException &e) {
 
         // Log the error
-        Logger::log_test_err(e.what());
-        this->failTest(2);
+        this->failTest(2, e.what());
 
     }
 

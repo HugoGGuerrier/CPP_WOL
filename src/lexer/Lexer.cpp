@@ -134,8 +134,6 @@ void Lexer::doLex() {
 
         std::cout << std::to_string(currentLine) << ":" << std::to_string(currentPos) << std::endl;
 
-        // TODO : Use low level function fopen() to read the file char by char
-
         // TODO : Do the lexing process and store it into the lexing result
 
         // Close the file

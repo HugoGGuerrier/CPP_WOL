@@ -16,9 +16,9 @@ private:
 
     // ----- Attributes -----
 
-    inline const static std::string testFile1 = Config::basePath + "/tests/wol_scripts/lexer_test1.wol";
+    inline const static std::string testFile1 = Config::basePath + "/wol_scripts/lexer_test1.wol";
 
-    inline const static std::string testFile2 = Config::basePath + "/tests/wol_scripts/lexer_test2.wol";
+    inline const static std::string testFile2 = Config::basePath + "/wol_scripts/lexer_test2.wol";
 
 public:
 

@@ -6,9 +6,9 @@
 void TestBase::init(int number) {
     // Allocate the result
     this->testsStatus = static_cast<int *>( malloc(number * sizeof(int)) );
-    this->testMessage = static_cast<std::string *>( malloc(number * sizeof(std::string)) );
-    this->testStartTime = static_cast<std::chrono::time_point<std::chrono::system_clock> *>( malloc(number * sizeof(std::chrono::time_point<std::chrono::system_clock>)) );
-    this->testEndTime = static_cast<std::chrono::time_point<std::chrono::system_clock> *>( malloc(number * sizeof(std::chrono::time_point<std::chrono::system_clock>)) );
+    this->testMessage = std::vector<std::string>(number);
+    this->testStartTime = static_cast<clock_t *>( malloc(number * sizeof(clock_t)) );
+    this->testEndTime = static_cast<clock_t *>( malloc(number * sizeof(clock_t)) );
     this->testNumber = number;
 
     // Fill the result with -1
@@ -17,19 +17,33 @@ void TestBase::init(int number) {
     }
 }
 
+void TestBase::startTest(int index) {
+    if(index <= this->testNumber && index > 0) {
+        this->testStartTime[index - 1] = clock();
+    }
+}
+
 void TestBase::succeedTest(int index, const std::string &message) {
-    if(this->testsStatus[index - 1] == -1) {
-        this->testsStatus[index - 1] = 0;
-    } else {
-        Logger::log_test_warn("Test " + std::to_string(index) + " already done...");
+    if(index <= this->testNumber && index > 0) {
+        if(this->testsStatus[index - 1] == -1) {
+            this->testsStatus[index - 1] = 0;
+            this->testEndTime[index - 1] = clock();
+            this->testMessage[index - 1] = message;
+        } else {
+            Logger::log_test_warn("Test " + std::to_string(index) + " already done...");
+        }
     }
 }
 
 void TestBase::failTest(int index, const std::string &message) {
-    if(this->testsStatus[index - 1] == -1) {
-        this->testsStatus[index - 1] = 1;
-    } else {
-        Logger::log_test_warn("Test " + std::to_string(index) + " already done...");
+    if(index <= this->testNumber && index > 0) {
+        if(this->testsStatus[index - 1] == -1) {
+            this->testsStatus[index - 1] = 1;
+            this->testEndTime[index - 1] = clock();
+            this->testMessage[index - 1] = message;
+        } else {
+            Logger::log_test_warn("Test " + std::to_string(index) + " already done...");
+        }
     }
 }
 
@@ -40,11 +54,16 @@ int TestBase::verifyTests() {
     // Verify each test
     for(int i = 0; i < this->testNumber; i++) {
         res += this->testsStatus[i];
-        if(this->testsStatus[i] == 1) {
-            Logger::log_test_failure("Test " + std::to_string(i + 1) + " : Failure !");
-        } else if(this->testsStatus[i] == 0) {
-            Logger::log_test_success("Test " + std::to_string(i + 1) + " : Success !");
-        } else if(this->testsStatus[i] == -1) {
+
+        if(this->testsStatus[i] == 1 || this->testsStatus[i] == 0) {
+            auto executionTime = ((double) this->testEndTime[i] - this->testStartTime[i]) / CLOCKS_PER_SEC;
+
+            if(this->testsStatus[i] == 1) {
+                Logger::log_test_failure("Test " + std::to_string(i + 1) + " : Failure ! (" + std::to_string(executionTime) + "s) | Message : " + this->testMessage[i]);
+            } else {
+                Logger::log_test_success("Test " + std::to_string(i + 1) + " : Success ! (" + std::to_string(executionTime) + "s) | Message : " + this->testMessage[i]);
+            }
+        } else {
             Logger::log_test_warn("Test " + std::to_string(i + 1) + " : Ignored !");
         }
     }
@@ -57,7 +76,6 @@ int TestBase::verifyTests() {
 
 TestBase::~TestBase() {
     free((void *) this->testsStatus);
-    free((void *) this->testMessage);
     free((void *) this->testStartTime);
     free((void *) this->testEndTime);
 }
