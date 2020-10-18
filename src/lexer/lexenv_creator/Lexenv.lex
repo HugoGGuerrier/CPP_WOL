@@ -11,6 +11,7 @@
 -DIVIDE:/
 -LESS:<
 -MORE:>
+-QUOTE:\"
 
 -LCURLY:{
 -RCURLY:}
@@ -46,4 +47,3 @@ NULL_VAL:null|NULL
 NUMBER_VAL:\-?[0-9]+(\.?[0-9])?[0-9]*
 IDENTIFIER:[a-zA-Z_][a-zA-Z0-9_]*
 CHAR_VAL:\'.\'
-STRING_VAL:\".*\"

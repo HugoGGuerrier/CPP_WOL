@@ -85,6 +85,10 @@ int exportLexEnv(const std::string &exportDirectory) {
         return 1;
     }
 
+    // Get the real number of stop char
+    int realStopCharNumber = getRealStopCharNumber();
+    int stopCounter = 0;
+
     // --- Export the H part
 
     // Prepare the H string
@@ -99,7 +103,7 @@ int exportLexEnv(const std::string &exportDirectory) {
 
     // Export static fields
     hExportString += "\tinline const static int symbolNumber = " + std::to_string(symbolNumber) + ";\n";
-    hExportString += "\tinline const static int stopCharNumber = " + std::to_string(stopCharNumber) + ";\n";
+    hExportString += "\tinline const static int stopCharNumber = " + std::to_string(realStopCharNumber) + ";\n";
     hExportString += "\tinline const static int regexNumber = " + std::to_string(regexNumber) + ";\n\n";
 
     for(int i = 0; i < symbolNumber; i++) {
@@ -117,10 +121,6 @@ int exportLexEnv(const std::string &exportDirectory) {
 
     // Include the h file
     cppExport << "#include \"Lexenv.h\"\n\n";
-
-    // Get the real number of stop char
-    int realStopCharNumber = getRealStopCharNumber();
-    int stopCounter = 0;
 
     // Prepare the export strings
     std::string nameArrayString = "const char *Lexenv::nameArray[" + std::to_string(symbolNumber) + "] = {";
@@ -156,7 +156,7 @@ int exportLexEnv(const std::string &exportDirectory) {
         } else {
 
             nameArrayString += "\"" + symbolNameVector[i] + "\"";
-            regexArrayString += "R\"(" + symbolRegexVector[i - stopCharNumber] + ")\"";
+            regexArrayString += "R\"(^" + symbolRegexVector[i - stopCharNumber] + "$)\"";
             regexCodeString += "Lexenv::" + symbolNameVector[i];
 
             if(i < symbolNumber - 1) {

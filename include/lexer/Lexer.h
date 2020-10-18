@@ -9,6 +9,30 @@
 
 #include "Token.h"
 
+/**
+ * The lexer data structure to avoid storing it in the class
+ */
+struct lexer_data {
+    /** The lexical buffer */
+    char *buffer = nullptr;
+    unsigned int bufferPointer = 0;
+
+    /** The current lexer state */
+    int currentState = -1;
+
+    /** Current pos and line to store the position in the file to lex */
+    unsigned int currentPos = 1;
+    unsigned int currentLine = 1;
+
+    /** Lexical analysis flags, to help pass from a state to another */
+    bool WINDOWS_NEW_LINE_FLAG = false;
+    bool COMMENT_START_FLAG = false;
+    bool COMMENT_MULTILINE_END_FLAG = false;
+};
+
+/**
+ * This class contain a lexer attached to a file and the result of the lexical analysis on this file
+ */
 class Lexer {
 private:
 
@@ -43,7 +67,28 @@ private:
      */
     inline const static int MULTI_LINE_COMMENT_STATE = 2;
 
+    /**
+     * When you encounter a string
+     */
+    inline const static int STRING_STATE = 3;
+
     // ----- Internal methods -----
+
+    /**
+     * Evaluate a char with the normal state actions
+     *
+     * @param charToEval The char to eval
+     * @param data The lexer data
+     */
+    void evalChar(char charToEval, lexer_data *data);
+
+    /**
+     * Update the position in the file to lex to keep the correct position in the data
+     *
+     * @param charToEval The char to eval
+     * @param data The lexer data
+     */
+    void updatePosition(char charToEval, lexer_data *data);
 
     /**
      * Test if a char is a stop character in the lexical analysis

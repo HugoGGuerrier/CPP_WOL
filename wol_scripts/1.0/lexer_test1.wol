@@ -1,15 +1,16 @@
 // This is a test comment
 class Test {
     bool :isCool = true;
+    char :testChar = 'c';
 
     void :main() {
         print("This is the main function");
     }
 }
 
-/**
-Multiline comment
-
+/*
+Multiline
+comment
 */
 
 int a = 79876;

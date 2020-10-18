@@ -22,4 +22,6 @@ std::string btos(bool b);
  */
 bool fileExists(const std::string &file);
 
+
+
 #endif // CPP_WOL_UTILS_H

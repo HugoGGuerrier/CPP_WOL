@@ -130,7 +130,7 @@ void Main_common::bootstrap() {
         regex_t newRegex;
         const char *regexString = Lexenv::regexArray[i];
 
-        int res = regcomp(&newRegex, regexString, REG_NOSUB);
+        int res = regcomp(&newRegex, regexString, REG_NOSUB | REG_EXTENDED);
         if(res == 0) {
             Lexenv::regexTArray[i] = newRegex;
         } else {

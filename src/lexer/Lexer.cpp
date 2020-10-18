@@ -17,6 +17,86 @@ Lexer::Lexer(const std::string &file) {
 
 // ----- Internal methods -----
 
+void Lexer::evalChar(char charToEval, lexer_data *data) {
+    int stopCharCode = Lexer::getStopCharCode(charToEval);
+
+    if(stopCharCode != -1) {
+
+        // If the buffer is not empty, evaluate the buffer
+        if(data->bufferPointer != 0) {
+            // Get the token code
+            int tokenCode = Lexer::getLexicalTokenCode(data->buffer);
+
+            // Reset the buffer
+            memset(data->buffer, 0, Config::maxWordSize * sizeof(char));
+            data->bufferPointer = 0;
+
+            // TODO : Add the token to the result
+        }
+
+        // Special stop char cases
+        switch (stopCharCode) {
+            case Lexenv::BLANK:
+                // Do nothing
+                break;
+
+            case Lexenv::DIVIDE:
+                // When a divide is encountered, set the comment flag to true
+                if(!data->COMMENT_START_FLAG) {
+                    data->COMMENT_START_FLAG = true;
+                } else {
+                    data->currentState = Lexer::ONE_LINE_COMMENT_STATE;
+                    data->COMMENT_START_FLAG = false;
+                }
+                break;
+
+            case Lexenv::TIMES:
+                // When a times is encountered, if the comment start flag is true, enter the multiline comment state
+                if(data->COMMENT_START_FLAG) {
+                    data->currentState = Lexer::MULTI_LINE_COMMENT_STATE;
+                    data->COMMENT_START_FLAG = false;
+                } else {
+                    // TODO : Add the token to the result
+                }
+                break;
+
+            case Lexenv::QUOTE:
+                data->currentState = Lexer::STRING_STATE;
+                break;
+
+            default:
+                // TODO : Add the token to the result
+                break;
+        }
+
+    } else {
+
+        // If the char isn't a stop char, just put it into the buffer
+        data->buffer[data->bufferPointer++] = charToEval;
+
+    }
+}
+
+void Lexer::updatePosition(char charToEval, lexer_data *data) {
+    // Increase the current position
+    data->currentPos++;
+
+    // Compatibility with windows written files
+    if(data->WINDOWS_NEW_LINE_FLAG && charToEval != '\n') {
+        data->WINDOWS_NEW_LINE_FLAG = false;
+    }
+
+    // Increase the line number
+    if(charToEval == '\n' && !data->WINDOWS_NEW_LINE_FLAG) {
+        data->currentPos = 1;
+        data->currentLine++;
+    } else if(charToEval == '\r') {
+        data->currentPos = 1;
+        data->currentLine++;
+        data->WINDOWS_NEW_LINE_FLAG = true;
+    }
+}
+
 int Lexer::getStopCharCode(char charToTest) {
     for(int i = 0; i < Lexenv::stopCharNumber; i++) {
         if(charToTest == Lexenv::stopCharArray[i]) return Lexenv::stopCharCode[i];
@@ -25,16 +105,19 @@ int Lexer::getStopCharCode(char charToTest) {
 }
 
 int Lexer::getLexicalTokenCode(char *strToTest) {
-    return 0;
+    for(int i = 0; i < Lexenv::regexNumber; i++) {
+        if(regexec(&Lexenv::regexTArray[i], strToTest, 0, nullptr, 0) == 0) return Lexenv::regexCode[i];
+    }
+    return -1;
 }
 
 void Lexer::addToken(int tokenId, int startPos, int endPos, int line, const char *value) {
-    auto newToken = std::make_unique<Token>(Token(tokenId));
-    newToken->setStartPos(startPos);
-    newToken->setEndPos(endPos);
-    newToken->setLine(line);
-    newToken->setValue(value);
-    this->lexResult.emplace_back();
+    Token newToken;
+    newToken.setStartPos(startPos);
+    newToken.setEndPos(endPos);
+    newToken.setLine(line);
+    newToken.setValue(value);
+    this->lexResult.emplace_back(newToken);
 }
 
 // ----- Getters -----
@@ -63,80 +146,55 @@ void Lexer::doLex() {
         }
 
         // Initialize the lexical analysis
-        char nextChar;
-        char *buffer = (char *)malloc(Config::maxWordSize * sizeof(char));
-        int currentState = Lexer::NORMAL_STATE;
+        lexer_data data;
+        data.buffer = (char *)malloc(Config::maxWordSize * sizeof(char));
+        memset(data.buffer, 0, Config::maxWordSize * sizeof(char));
+        data.currentState = Lexer::NORMAL_STATE;
 
-        int bufferPointer = 0;
-        int currentLine = 1;
-        int currentPos = 1;
+        char charToEval;
 
-        bool windowsNewlineCompatFlag = false;
+        while((charToEval = (char)fgetc(fileToLex)) != EOF) {
 
-        while((nextChar = (char)fgetc(fileToLex)) != EOF) {
-            if(currentState == Lexer::NORMAL_STATE) {
+            switch (data.currentState) {
 
-                int stopCharCode = Lexer::getStopCharCode(nextChar);
-                if(stopCharCode != -1) {
+                case Lexer::NORMAL_STATE:
+                    this->evalChar(charToEval, &data);
+                    break;
 
-                    // If the char is a stop char
-                    if(bufferPointer != 0) {
-                        int tokenCode = Lexer::getLexicalTokenCode(buffer);
-                    } else {
+                case Lexer::STRING_STATE:
+                    // TODO : The lexer behavior for a string value
+                    break;
 
+                case Lexer::ONE_LINE_COMMENT_STATE:
+                    // If there is a carriage return reset the state to normal
+                    if(charToEval == '\n' || charToEval == '\r') {
+                        data.currentState = Lexer::NORMAL_STATE;
                     }
+                    break;
 
-                } else {
-
-                    // If the char isn't a stop char, just put it into the buffer
-                    buffer[bufferPointer] = nextChar;
-
-                }
-
-            } else if(currentState == Lexer::ONE_LINE_COMMENT_STATE) {
-
-                // If there is a carriage return reset the state to normal
-                if(nextChar == '\n' || nextChar == '\r') {
-                    currentState = Lexer::NORMAL_STATE;
-                }
-
-            } else if(currentState == Lexer::MULTI_LINE_COMMENT_STATE) {
-
-                // If there is the end of the comment reset state to normal
-                if(nextChar == '*') {
-                    nextChar = (char)getc(fileToLex);
-                    currentPos++;
-                    if(nextChar == '/') {
-                        currentState = Lexer::NORMAL_STATE;
+                case Lexer::MULTI_LINE_COMMENT_STATE:
+                    // Handle the multiline comment end adn return to normal state
+                    if(charToEval == '*') {
+                        data.COMMENT_MULTILINE_END_FLAG = true;
+                    } else if(data.COMMENT_MULTILINE_END_FLAG) {
+                        if (charToEval == '/') data.currentState = NORMAL_STATE;
+                        data.COMMENT_MULTILINE_END_FLAG = false;
                     }
-                }
+                    break;
+
+                default:
+                    throw LexingException("Lexer", "doLex", "Lexer state is not referenced !");
 
             }
 
-            // Increase the current position
-            currentPos++;
+            // Update the file position
+            updatePosition(charToEval, &data);
 
-            // Compatibility with windows written files
-            if(windowsNewlineCompatFlag && nextChar != '\n') {
-                windowsNewlineCompatFlag = false;
-            }
 
-            // Increase the line number
-            if(nextChar == '\n' && !windowsNewlineCompatFlag) {
-                currentPos = 1;
-                currentLine++;
-            } else if(nextChar == '\r') {
-                currentPos = 1;
-                currentLine++;
-                windowsNewlineCompatFlag = true;
-            }
         }
 
-        std::cout << std::to_string(currentLine) << ":" << std::to_string(currentPos) << std::endl;
-
-        // TODO : Do the lexing process and store it into the lexing result
-
-        // Close the file
+        // Close the file and clean memory
+        free(data.buffer);
         fclose(fileToLex);
 
     }
