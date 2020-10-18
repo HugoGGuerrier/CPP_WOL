@@ -18,12 +18,14 @@ void TestBase::init(int number) {
 }
 
 void TestBase::startTest(int index) {
+    // Start the wanted test
     if(index <= this->testNumber && index > 0) {
         this->testStartTime[index - 1] = clock();
     }
 }
 
 void TestBase::succeedTest(int index, const std::string &message) {
+    // Succeed the wanted test and get the execution time
     if(index <= this->testNumber && index > 0) {
         if(this->testsStatus[index - 1] == -1) {
             this->testsStatus[index - 1] = 0;
@@ -36,6 +38,7 @@ void TestBase::succeedTest(int index, const std::string &message) {
 }
 
 void TestBase::failTest(int index, const std::string &message) {
+    // Fail the wanted test and get the execution time
     if(index <= this->testNumber && index > 0) {
         if(this->testsStatus[index - 1] == -1) {
             this->testsStatus[index - 1] = 1;
@@ -75,6 +78,7 @@ int TestBase::verifyTests() {
 // ----- Destructor -----
 
 TestBase::~TestBase() {
+    // Free all allocated memory
     free((void *) this->testsStatus);
     free((void *) this->testStartTime);
     free((void *) this->testEndTime);

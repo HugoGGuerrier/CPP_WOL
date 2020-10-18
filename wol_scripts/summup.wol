@@ -8,7 +8,7 @@ class Main {
     */
     public int :main(array<string> args) {
         int local = 12;
-        print(Main:test);
+        print(Main:staticVar);
         print(__globalTest);
     }
 
