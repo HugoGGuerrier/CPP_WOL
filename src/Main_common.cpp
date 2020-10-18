@@ -1,9 +1,12 @@
 #include <string>
 #include <iostream>
 #include <cstring>
+#include <regex.h>
 
 #include "tools/Config.h"
 #include "tools/Logger.h"
+#include "lexer/Lexenv.h"
+#include "exceptions/BootstrapException.h"
 
 #include "Main_common.h"
 
@@ -115,6 +118,23 @@ void Main_common::readArgs(int argc, char *argv[], bool dev) {
                 Config::wolArgs.emplace_back(currentArg);
             }
 
+        }
+    }
+
+}
+
+void Main_common::bootstrap() {
+
+    // --- Populate the lexical environment regex array
+    for(int i = 0; i < Lexenv::regexNumber; i++) {
+        regex_t newRegex;
+        const char *regexString = Lexenv::regexArray[i];
+
+        int res = regcomp(&newRegex, regexString, REG_NOSUB);
+        if(res == 0) {
+            Lexenv::regexTArray[i] = newRegex;
+        } else {
+            throw BootstrapException("Main_common", "bootstrap", "Cannot compile the regex with " + std::string(regexString) + " !");
         }
     }
 

@@ -25,6 +25,13 @@ public:
      */
     static void readArgs(int argc, char *argv[], bool dev);
 
+    /**
+     * Bootstrap all the application
+     *
+     * @throw An exception if the bootstrap cannot be done
+     */
+    static void bootstrap();
+
 };
 
 #endif // CPP_WOL_MAIN_COMMON_H

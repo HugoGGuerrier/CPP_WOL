@@ -1,9 +1,6 @@
 #include <iostream>
 
-#include "Main_common.h"
-#include "tools/Config.h"
-#include "tools/Logger.h"
-#include "tools/Utils.h"
+// TODO : Prepare the production main to release a test version
 
 /**
  * This is the main entry point to the WOL interpreter everything start from here
@@ -13,33 +10,6 @@
  * @return If the interpreter runs without problems
  */
 int main(int argc, char *argv[]) {
-    // Test if the user provide correct number of arguments
-    if(argc <= 1) {
-        Main_common::displayHelp(false, false);
-        return 0;
-    }
-
-    // Parse arguments
-    Main_common::readArgs(argc, argv, false);
-
-    Logger::log_dev("Interpreter configuration :\n" + Config::toString());
-
-    // Display the help and quit if the flags is true
-    if(Config::helpFlag) {
-        Main_common::displayHelp(true, false);
-        return 0;
-    }
-
-    // Verify that the WOL file exists
-    if(!fileExists(Config::wolFile)) {
-        std::cout << "Specified WOL file " << Config::wolFile << " is missing or unreadable" << std::endl;
-        return 1;
-    }
-
-    // Create and init the interpreter
-
-    // Start the file interpretation
-
-    // End of the WOL interpreter
+    std::cout << "TODO : Make the production main" << std::endl;
     return 0;
 }

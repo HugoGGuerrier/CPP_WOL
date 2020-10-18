@@ -76,7 +76,7 @@ void Lexer::doLex() {
         while((nextChar = (char)fgetc(fileToLex)) != EOF) {
             if(currentState == Lexer::NORMAL_STATE) {
 
-                int stopCharCode = this->getStopCharCode(nextChar);
+                int stopCharCode = Lexer::getStopCharCode(nextChar);
                 if(stopCharCode != -1) {
 
                     // If the char is a stop char

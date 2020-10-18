@@ -50,7 +50,7 @@ if(${BUILD_FOR_DEV})
             include/tests/TestBase.h src/tests/TestBase.cpp
             src/tests/TestEngine.cpp include/tests/TestEngine.h
             src/tests/LexerTests.cpp src/tests/LexerTests.h
-            src/tests/UtilsTests.cpp src/tests/UtilsTests.h)
+            src/tests/UtilsTests.cpp src/tests/UtilsTests.h include/exceptions/BootstrapException.h)
 else()
     # Set the test dir to void
     set(BASE_PATH "void")
@@ -71,7 +71,7 @@ else()
 
             include/exceptions/FileException.h
             include/exceptions/CustomBaseException.h
-            include/exceptions/LexingException.h)
+            include/exceptions/LexingException.h include/exceptions/BootstrapException.h)
 endif()
 
 # Add the dependency to the lexenv creator

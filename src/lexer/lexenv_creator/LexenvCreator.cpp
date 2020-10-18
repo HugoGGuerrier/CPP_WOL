@@ -89,12 +89,13 @@ int exportLexEnv(const std::string &exportDirectory) {
 
     // Prepare the H string
     std::string hExportString;
-    hExportString += "#ifndef CPP_WOL_LEXENV_H\n#define CPP_WOL_LEXENV_H\n\nclass Lexenv {\npublic:\n"
+    hExportString += "#ifndef CPP_WOL_LEXENV_H\n#define CPP_WOL_LEXENV_H\n\n#include <regex.h>\n\nclass Lexenv {\npublic:\n"
                      "\tconst static char *nameArray[];\n\n"
                      "\tconst static char stopCharArray[];\n"
                      "\tconst static int stopCharCode[];\n\n"
                      "\tconst static char *regexArray[];\n"
-                     "\tconst static int regexCode[];\n\n";
+                     "\tconst static int regexCode[];\n"
+                     "\tstatic regex_t regexTArray[];\n\n";
 
     // Export static fields
     hExportString += "\tinline const static int symbolNumber = " + std::to_string(symbolNumber) + ";\n";
@@ -127,6 +128,7 @@ int exportLexEnv(const std::string &exportDirectory) {
     std::string stopCharCodeString = "const int Lexenv::stopCharCode[" + std::to_string(realStopCharNumber) + "] = {";
     std::string regexArrayString = "const char *Lexenv::regexArray[" + std::to_string(regexNumber) + "] = {";
     std::string regexCodeString = "const int Lexenv::regexCode[" + std::to_string(regexNumber) + "] = {";
+    std::string regexTArrayString = "regex_t Lexenv::regexTArray[" + std::to_string(regexNumber) + "];\n";
 
     // Export all values
     for(int i = 0; i < symbolNumber; i++) {
@@ -174,7 +176,7 @@ int exportLexEnv(const std::string &exportDirectory) {
     regexCodeString += "};\n";
 
     // Write the cpp file
-    cppExport << nameArrayString << stopCharArrayString << stopCharCodeString << regexArrayString << regexCodeString;
+    cppExport << nameArrayString << stopCharArrayString << stopCharCodeString << regexArrayString  << regexCodeString << regexTArrayString;
     cppExport.close();
 
     // Return the success

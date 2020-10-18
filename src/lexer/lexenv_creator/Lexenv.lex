@@ -19,8 +19,6 @@
 -LPAREN:(
 -RPAREN:)
 
-EQEQ:\=\=
-
 CLASS:class
 PRIVATE:private
 PROTECTED:protected
