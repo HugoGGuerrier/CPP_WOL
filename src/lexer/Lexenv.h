@@ -60,6 +60,9 @@ public:
 	inline const static int NUMBER_VAL = 39;
 	inline const static int IDENTIFIER = 40;
 	inline const static int CHAR_VAL = 41;
+
+	static int getStopCharCode(char charToTest);
+	static int getLexicalTokenCode(char *strToTest);
 };
 
 #endif

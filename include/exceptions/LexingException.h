@@ -7,7 +7,7 @@
 
 class LexingException: public CustomBaseException {
 public:
-    LexingException(const std::string &cls, const std::string &func, const std::string &msg): CustomBaseException(cls, func, msg) {}
+    LexingException(const std::string &msg): CustomBaseException("Lexer", "doLex", msg) {}
 };
 
 #endif // CPP_WOL_LEXINGEXCEPTION_H

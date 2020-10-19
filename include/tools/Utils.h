@@ -1,6 +1,8 @@
 #ifndef CPP_WOL_UTILS_H
 #define CPP_WOL_UTILS_H
 
+#define EOF_CHAR = '\xFF'
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -21,6 +23,14 @@ std::string btos(bool b);
  * @return True if the file is readable
  */
 bool fileExists(const std::string &file);
+
+/**
+ * Get the escaped character code in an int, this function define all known escaped chars
+ *
+ * @param charToEscape The char to escape
+ * @return The char escaped code, -1 else
+ */
+int getEscapedChar(char charToEscape);
 
 
 

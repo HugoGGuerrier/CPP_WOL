@@ -13,20 +13,33 @@ bool fileExists(const std::string &file) {
     return fileToTest != nullptr;
 }
 
-// ----- Vector displaying functions -----
+int getEscapedChar(char charToEscape) {
+    switch (charToEscape) {
+        case '0':
+            return '\0';
 
-std::string vectos(const std::vector<std::string> &vector, bool newLine) {
-    std::string res = "<";
+        case 'n':
+            return '\n';
 
-    if(newLine) res.append("\n");
-    for(int i = 0; i < vector.size(); i++) {
-        res.append(vector[i]);
-        if(i < vector.size() - 1) {
-            res.append(newLine ? "\n": ", ");
-        }
+        case 'r':
+            return '\r';
+
+        case 't':
+            return '\t';
+
+        case '"':
+            return '\"';
+
+        case '\'':
+            return '\'';
+
+        case '\\':
+            return '\\';
+
+        case 'b':
+            return '\b';
+
+        default:
+            return -1;
     }
-    if(newLine) res.append("\n");
-    res.append(">");
-
-    return res;
 }

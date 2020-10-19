@@ -110,6 +110,10 @@ int exportLexEnv(const std::string &exportDirectory) {
         hExportString += "\tinline const static int " + symbolNameVector[i] + " = " + std::to_string(i) + ";\n";
     }
 
+    // Export the functions profile
+    hExportString += "\n\tstatic int getStopCharCode(char charToTest);\n";
+    hExportString += "\tstatic int getLexicalTokenCode(char *strToTest);\n";
+
     // Finalize the H file
     hExportString += "};\n\n#endif";
 
@@ -173,10 +177,31 @@ int exportLexEnv(const std::string &exportDirectory) {
     stopCharArrayString += "};\n";
     stopCharCodeString += "};\n\n";
     regexArrayString += "};\n";
-    regexCodeString += "};\n";
+    regexCodeString += "};\n\n";
 
     // Write the cpp file
     cppExport << nameArrayString << stopCharArrayString << stopCharCodeString << regexArrayString  << regexCodeString << regexTArrayString;
+
+    // Export the functions
+    std::string functionsExportString;
+
+    functionsExportString += "int Lexenv::getStopCharCode(char charToTest) {\n"
+                             "    for(int i = 0; i < Lexenv::stopCharNumber; i++) {\n"
+                             "        if(charToTest == Lexenv::stopCharArray[i]) return Lexenv::stopCharCode[i];\n"
+                             "    }\n"
+                             "    return -1;\n"
+                             "}\n\n";
+
+    functionsExportString += "int Lexenv::getLexicalTokenCode(char *strToTest) {\n"
+                             "    for(int i = 0; i < Lexenv::regexNumber; i++) {\n"
+                             "        if(regexec(&Lexenv::regexTArray[i], strToTest, 0, nullptr, 0) == 0) return Lexenv::regexCode[i];\n"
+                             "    }\n"
+                             "    return -1;\n"
+                             "}\n\n";
+
+    cppExport << functionsExportString;
+
+    // Close CPP file
     cppExport.close();
 
     // Return the success

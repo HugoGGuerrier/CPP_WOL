@@ -24,10 +24,24 @@ struct lexer_data {
     unsigned int currentPos = 1;
     unsigned int currentLine = 1;
 
-    /** Lexical analysis flags, to help pass from a state to another */
+    /** Buffer for string values */
+    std::string stringValueBuffer;
+
+    /** Error handling vars */
+    unsigned int errorLine = 1;
+    unsigned int errorPos = 1;
+    std::string errorMessage;
+};
+
+/**
+ * This structure contains all lexer flags
+ */
+struct lexer_flags {
+    bool ERROR_FLAG = false;
     bool WINDOWS_NEW_LINE_FLAG = false;
     bool COMMENT_START_FLAG = false;
     bool COMMENT_MULTILINE_END_FLAG = false;
+    bool NEXT_ESCAPED_FLAG = false;
 };
 
 /**
@@ -49,6 +63,16 @@ private:
      * The lexical result of the wanted file in a single array
      */
     std::vector<Token> lexResult;
+
+    /**
+     * Data of the lexer to process the lexical analysis
+     */
+    lexer_data lexerData;
+
+    /**
+     * Flags of the lexer to process the lexical analysis
+     */
+    lexer_flags lexerFlags;
 
     // --- Static
 
@@ -75,36 +99,34 @@ private:
     // ----- Internal methods -----
 
     /**
-     * Evaluate a char with the normal state actions
+     * Evaluate a character with the normal state actions
      *
      * @param charToEval The char to eval
-     * @param data The lexer data
      */
-    void evalChar(char charToEval, lexer_data *data);
+    void evalNormal(char charToEval);
+
+    /**
+     * Evaluate a character with the string state actions
+     *
+     * @param charToEval The character to eval
+     */
+    void evalString(char charToEval);
 
     /**
      * Update the position in the file to lex to keep the correct position in the data
      *
      * @param charToEval The char to eval
-     * @param data The lexer data
      */
-    void updatePosition(char charToEval, lexer_data *data);
+    void updatePosition(char charToEval);
 
     /**
-     * Test if a char is a stop character in the lexical analysis
+     * Raise an error at the wanted line and with the wanted message, use it to uniform error raising
      *
-     * @param charToTest The char to test
-     * @return The character code to simplify lexical analysis, -1 if it's not
+     * @param message The message to display
+     * @param line The line of the error
+     * @param pos The position of the error
      */
-    static int getStopCharCode(char charToTest);
-
-    /**
-     * Test if a string is in the lexical environment
-     *
-     * @param strToTest The string to test
-     * @return The lexical token code, -1 if not in the lexical environment
-     */
-    static int getLexicalTokenCode(char *strToTest);
+    void raiseError(const std::string &message, unsigned int line, unsigned int pos);
 
     /**
      * Add a token with the wanted ID to the lex result

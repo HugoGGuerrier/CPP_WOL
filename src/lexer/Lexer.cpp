@@ -4,6 +4,7 @@
 #include <tools/Config.h>
 
 #include "lexer/Lexer.h"
+#include "tools/Utils.h"
 #include "Lexenv.h"
 
 #include "exceptions/FileException.h"
@@ -17,19 +18,30 @@ Lexer::Lexer(const std::string &file) {
 
 // ----- Internal methods -----
 
-void Lexer::evalChar(char charToEval, lexer_data *data) {
-    int stopCharCode = Lexer::getStopCharCode(charToEval);
+void Lexer::evalNormal(char charToEval) {
+    // --- Flag reseting
+
+    if(this->lexerFlags.COMMENT_START_FLAG) {
+        if(charToEval != '/' && charToEval != '*') {
+            // TODO : Add the '/' token to the result
+            this->lexerFlags.COMMENT_START_FLAG = false;
+        }
+    }
+
+    // --- Stop char handling
+
+    int stopCharCode = Lexenv::getStopCharCode(charToEval);
 
     if(stopCharCode != -1) {
 
         // If the buffer is not empty, evaluate the buffer
-        if(data->bufferPointer != 0) {
+        if(this->lexerData.bufferPointer != 0) {
             // Get the token code
-            int tokenCode = Lexer::getLexicalTokenCode(data->buffer);
+            int tokenCode = Lexenv::getLexicalTokenCode(this->lexerData.buffer);
 
             // Reset the buffer
-            memset(data->buffer, 0, Config::maxWordSize * sizeof(char));
-            data->bufferPointer = 0;
+            memset(this->lexerData.buffer, 0, Config::maxWordSize * sizeof(char));
+            this->lexerData.bufferPointer = 0;
 
             // TODO : Add the token to the result
         }
@@ -42,26 +54,26 @@ void Lexer::evalChar(char charToEval, lexer_data *data) {
 
             case Lexenv::DIVIDE:
                 // When a divide is encountered, set the comment flag to true
-                if(!data->COMMENT_START_FLAG) {
-                    data->COMMENT_START_FLAG = true;
+                if(!this->lexerFlags.COMMENT_START_FLAG) {
+                    this->lexerFlags.COMMENT_START_FLAG = true;
                 } else {
-                    data->currentState = Lexer::ONE_LINE_COMMENT_STATE;
-                    data->COMMENT_START_FLAG = false;
+                    this->lexerData.currentState = Lexer::ONE_LINE_COMMENT_STATE;
+                    this->lexerFlags.COMMENT_START_FLAG = false;
                 }
                 break;
 
             case Lexenv::TIMES:
                 // When a times is encountered, if the comment start flag is true, enter the multiline comment state
-                if(data->COMMENT_START_FLAG) {
-                    data->currentState = Lexer::MULTI_LINE_COMMENT_STATE;
-                    data->COMMENT_START_FLAG = false;
+                if(this->lexerFlags.COMMENT_START_FLAG) {
+                    this->lexerData.currentState = Lexer::MULTI_LINE_COMMENT_STATE;
+                    this->lexerFlags.COMMENT_START_FLAG = false;
                 } else {
                     // TODO : Add the token to the result
                 }
                 break;
 
             case Lexenv::QUOTE:
-                data->currentState = Lexer::STRING_STATE;
+                this->lexerData.currentState = Lexer::STRING_STATE;
                 break;
 
             default:
@@ -72,43 +84,69 @@ void Lexer::evalChar(char charToEval, lexer_data *data) {
     } else {
 
         // If the char isn't a stop char, just put it into the buffer
-        data->buffer[data->bufferPointer++] = charToEval;
+        this->lexerData.buffer[this->lexerData.bufferPointer++] = charToEval;
 
     }
 }
 
-void Lexer::updatePosition(char charToEval, lexer_data *data) {
+void Lexer::evalString(char charToEval) {
+    if (charToEval == '\n' || charToEval == '\r' || charToEval == '\0') {
+
+        // Handle the unfinished string error
+        unsigned int position = this->lexerData.currentPos - this->lexerData.stringValueBuffer.length() - 1;
+        this->raiseError("Unfinished string value", this->lexerData.currentLine, position);
+
+    } else if(this->lexerFlags.NEXT_ESCAPED_FLAG) {
+
+        // Handle the possibly escaped chars
+        int escapedCharInt = getEscapedChar(charToEval);
+        if(escapedCharInt == -1) {
+            this->raiseError("Unknown escaped sequence", this->lexerData.currentLine, this->lexerData.currentPos - 2);
+        } else {
+            this->lexerData.stringValueBuffer.push_back((char)escapedCharInt);
+        }
+
+    } else {
+
+        // Append the chars
+        if(charToEval ==  '"') {
+            // TODO : Add the token to the result
+            this->lexerData.stringValueBuffer.clear();
+            this->lexerData.currentState = Lexer::NORMAL_STATE;
+        } else if(charToEval == '\\') {
+            this->lexerFlags.NEXT_ESCAPED_FLAG = true;
+        } else {
+            this->lexerData.stringValueBuffer.push_back(charToEval);
+        }
+
+    }
+}
+
+void Lexer::updatePosition(char charToEval) {
     // Increase the current position
-    data->currentPos++;
+    this->lexerData.currentPos++;
 
     // Compatibility with windows written files
-    if(data->WINDOWS_NEW_LINE_FLAG && charToEval != '\n') {
-        data->WINDOWS_NEW_LINE_FLAG = false;
+    if(this->lexerFlags.WINDOWS_NEW_LINE_FLAG && charToEval != '\n') {
+        this->lexerFlags.WINDOWS_NEW_LINE_FLAG = false;
     }
 
     // Increase the line number
-    if(charToEval == '\n' && !data->WINDOWS_NEW_LINE_FLAG) {
-        data->currentPos = 1;
-        data->currentLine++;
+    if(charToEval == '\n' && !this->lexerFlags.WINDOWS_NEW_LINE_FLAG) {
+        this->lexerData.currentPos = 1;
+        this->lexerData.currentLine++;
     } else if(charToEval == '\r') {
-        data->currentPos = 1;
-        data->currentLine++;
-        data->WINDOWS_NEW_LINE_FLAG = true;
+        this->lexerData.currentPos = 1;
+        this->lexerData.currentLine++;
+        this->lexerFlags.WINDOWS_NEW_LINE_FLAG = true;
     }
 }
 
-int Lexer::getStopCharCode(char charToTest) {
-    for(int i = 0; i < Lexenv::stopCharNumber; i++) {
-        if(charToTest == Lexenv::stopCharArray[i]) return Lexenv::stopCharCode[i];
-    }
-    return -1;
-}
-
-int Lexer::getLexicalTokenCode(char *strToTest) {
-    for(int i = 0; i < Lexenv::regexNumber; i++) {
-        if(regexec(&Lexenv::regexTArray[i], strToTest, 0, nullptr, 0) == 0) return Lexenv::regexCode[i];
-    }
-    return -1;
+void Lexer::raiseError(const std::string &message, unsigned int line, unsigned int pos) {
+    this->lexerFlags.ERROR_FLAG = true;
+    this->lexerData.errorLine = line;
+    this->lexerData.errorPos = pos;
+    this->lexerData.errorMessage = message;
 }
 
 void Lexer::addToken(int tokenId, int startPos, int endPos, int line, const char *value) {
@@ -146,56 +184,76 @@ void Lexer::doLex() {
         }
 
         // Initialize the lexical analysis
-        lexer_data data;
-        data.buffer = (char *)malloc(Config::maxWordSize * sizeof(char));
-        memset(data.buffer, 0, Config::maxWordSize * sizeof(char));
-        data.currentState = Lexer::NORMAL_STATE;
+        this->lexerData.buffer = (char *)malloc(Config::maxWordSize * sizeof(char));
+        memset(this->lexerData.buffer, 0, Config::maxWordSize * sizeof(char));
+        this->lexerData.currentState = Lexer::NORMAL_STATE;
 
-        char charToEval;
+        // Temporary variables
+        int charToEvalInt = '\0';
 
-        while((charToEval = (char)fgetc(fileToLex)) != EOF) {
+        while(charToEvalInt != EOF && !this->lexerFlags.ERROR_FLAG) {
+            charToEvalInt = fgetc(fileToLex);
+            char realChar = charToEvalInt != -1 ? (char) charToEvalInt : '\0';
 
-            switch (data.currentState) {
+            switch (this->lexerData.currentState) {
 
                 case Lexer::NORMAL_STATE:
-                    this->evalChar(charToEval, &data);
+
+                    // Handle the current character normally
+                    this->evalNormal(realChar);
+
                     break;
 
                 case Lexer::STRING_STATE:
-                    // TODO : The lexer behavior for a string value
+
+                    // Eval the character with the string state
+                    this->evalString(realChar);
+
                     break;
 
                 case Lexer::ONE_LINE_COMMENT_STATE:
+
                     // If there is a carriage return reset the state to normal
-                    if(charToEval == '\n' || charToEval == '\r') {
-                        data.currentState = Lexer::NORMAL_STATE;
-                    }
+                    if(realChar == '\n' || realChar == '\r') this->lexerData.currentState = Lexer::NORMAL_STATE;
+
                     break;
 
                 case Lexer::MULTI_LINE_COMMENT_STATE:
+
                     // Handle the multiline comment end adn return to normal state
-                    if(charToEval == '*') {
-                        data.COMMENT_MULTILINE_END_FLAG = true;
-                    } else if(data.COMMENT_MULTILINE_END_FLAG) {
-                        if (charToEval == '/') data.currentState = NORMAL_STATE;
-                        data.COMMENT_MULTILINE_END_FLAG = false;
+                    if(realChar == '*') {
+
+                        this->lexerFlags.COMMENT_MULTILINE_END_FLAG = true;
+
+                    } else if(this->lexerFlags.COMMENT_MULTILINE_END_FLAG) {
+
+                        if (realChar == '/') this->lexerData.currentState = NORMAL_STATE;
+                        this->lexerFlags.COMMENT_MULTILINE_END_FLAG = false;
+
                     }
+
                     break;
 
                 default:
-                    throw LexingException("Lexer", "doLex", "Lexer state is not referenced !");
+                    this->raiseError("Lexer state is not referenced", 1, 1);
+                    break;
 
             }
 
             // Update the file position
-            updatePosition(charToEval, &data);
-
+            Lexer::updatePosition(realChar);
 
         }
 
         // Close the file and clean memory
-        free(data.buffer);
+        free(this->lexerData.buffer);
         fclose(fileToLex);
+
+        // Handle errors
+        if(this->lexerFlags.ERROR_FLAG) {
+            std::string message = "File : " + this->file + " [" + std::to_string(this->lexerData.errorLine) + ":" + std::to_string(this->lexerData.errorPos) + "] | " + this->lexerData.errorMessage;
+            throw LexingException(message);
+        }
 
     }
 }
