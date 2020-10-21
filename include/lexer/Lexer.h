@@ -151,6 +151,10 @@ public:
      */
     explicit Lexer(const std::string &file);
 
+    // ----- Destructor -----
+
+    ~Lexer();
+
     // ----- Getters -----
 
     /**

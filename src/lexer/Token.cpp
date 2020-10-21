@@ -12,6 +12,12 @@ Token::Token() {
     this->valueSize = 0;
 }
 
+// ----- Destructor -----
+
+Token::~Token() {
+    free((void *) this->value);
+}
+
 // ----- Getters -----
 
 int Token::getId() const {

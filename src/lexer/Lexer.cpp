@@ -16,6 +16,12 @@ Lexer::Lexer(const std::string &file) {
     this->file = file;
 }
 
+// ----- Destructor -----
+
+Lexer::~Lexer() {
+    this->lexResult.clear();
+}
+
 // ----- Internal methods -----
 
 void Lexer::evalNormal(char charToEval) {
@@ -76,8 +82,16 @@ void Lexer::evalNormal(char charToEval) {
 
     } else {
 
-        // If the char isn't a stop char, just put it into the buffer
-        this->lexerData.buffer[this->lexerData.bufferPointer++] = charToEval;
+        // Verify the buffer size
+        if(this->lexerData.bufferPointer >= Config::maxWordSize) {
+            this->raiseError("A word exceed the maximum size", this->lexerData.currentLine, this->lexerData.currentPos - this->lexerData.bufferPointer);
+        } else {
+
+            // If the char isn't a stop char, just put it into the buffer
+            this->lexerData.buffer[this->lexerData.bufferPointer++] = charToEval;
+
+        }
+
 
     }
 }
