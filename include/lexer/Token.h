@@ -36,6 +36,11 @@ private:
      */
     const char *value;
 
+    /**
+     * The size of the token's value
+     */
+    unsigned int valueSize;
+
 public:
 
     // ----- Constructors -----
@@ -45,12 +50,7 @@ public:
      *
      * @param id The token id
      */
-    explicit Token(int id);
-
-    /**
-     * Construct a new empty token
-     */
-    Token() : Token(-1) {};
+    explicit Token();
 
     // ----- Getters -----
 
@@ -62,9 +62,11 @@ public:
 
     [[nodiscard]] unsigned int getEndPos() const;
 
+    [[nodiscard]] const char *getName() const;
+
     [[nodiscard]] const char *getValue() const;
 
-    [[nodiscard]] const char *getName() const;
+    [[nodiscard]] unsigned int getValueSize() const;
 
     // ----- Setters -----
 
@@ -76,7 +78,16 @@ public:
 
     void setEndPos(unsigned int endPos);
 
-    void setValue(const char *value);
+    void setValue(const char *value, unsigned int size);
+
+    // ----- Class methods -----
+
+    /**
+     * Get the string representation of the token
+     *
+     * @return The string representation of the token
+     */
+    [[nodiscard]] std::string toString() const;
 };
 
 #endif // CPP_WOL_TOKEN_H

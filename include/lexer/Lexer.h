@@ -138,7 +138,7 @@ private:
      *
      * @param tokenId The ID of the token to add
      */
-    void addToken(int tokenId, unsigned int startPos, unsigned int endPos, unsigned int line, const char *value = nullptr);
+    void addToken(int tokenId, unsigned int startPos, unsigned int endPos, unsigned int line, const char *value = nullptr, unsigned int size = 0);
 
 public:
 

@@ -1,6 +1,8 @@
 #ifndef CPP_WOL_UTILS_H
 #define CPP_WOL_UTILS_H
 
+#define EOF_CHAR '\xFF'
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -30,6 +32,12 @@ bool fileExists(const std::string &file);
  */
 int getEscapedChar(char charToEscape);
 
+/**
+ * Display a vector of token
+ *
+ * @param vec The vector to display
+ */
+std::string vectos(const std::vector<Token> &vec, bool nl = false);
 
 
 #endif // CPP_WOL_UTILS_H

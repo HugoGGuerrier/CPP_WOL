@@ -1,3 +1,4 @@
+#include "tools/Utils.h"
 #include "LexerTests.h"
 #include "lexer/Lexer.h"
 
@@ -28,6 +29,10 @@ int LexerTests::run(){
         lexer1.doLex();
 
         this->succeedTest(1, "File successfully lexed !");
+
+        std::vector<Token> res;
+        lexer1.getLexResult(res);
+        Logger::log_dev(vectos(res));
 
     } catch (FileException &e) {
 

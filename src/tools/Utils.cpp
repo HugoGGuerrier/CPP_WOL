@@ -43,3 +43,17 @@ int getEscapedChar(char charToEscape) {
             return -1;
     }
 }
+
+std::string vectos(const std::vector<Token> &vec, bool nl) {
+    std::string res = "<";
+    for(int i = 0; i < vec.size(); i++) {
+        res += nl ? "\t" : "";
+        res += vec[i].toString();
+
+        if(i < vec.size() - 1) {
+            res += nl ? "\n" : ", ";
+        }
+    }
+    res += ">";
+    return res;
+}

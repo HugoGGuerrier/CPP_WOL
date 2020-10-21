@@ -3,30 +3,15 @@
 #include <vector>
 #include <string>
 
-std::vector<std::string> symbolNameVector;
-std::vector<std::string> stopCharsVector;
-std::vector<std::string> symbolRegexVector;
+std::vector<std::string> nameArray;
+std::vector<std::string> stopCharArray;
+std::vector<std::string> stopCharCode;
+std::vector<std::string> regexArray;
+std::vector<std::string> regexCode;
 
 int symbolNumber = 0;
 int stopCharNumber = 0;
 int regexNumber = 0;
-int symbolOnlyNumber = 0;
-
-/**
- * Get the real number of stop chars
- *
- * @return The number of stop chars with process done
- */
-int getRealStopCharNumber() {
-    int res = 0;
-    for(const std::string& str : stopCharsVector) {
-        for(int i = 0; i < str.length(); i++) {
-            if(str[i] == '\\') i++;
-            res++;
-        }
-    }
-    return res;
-}
 
 /**
  * Function to use to parse the lex file and fill the vectors
@@ -34,6 +19,15 @@ int getRealStopCharNumber() {
  * @param lexFile The file to parse
  */
 void parseLexFile(std::ifstream &lexFile) {
+    // Include the constant symbols
+    // --- EOF
+    nameArray.emplace_back("EOF_SYMBOL");
+    stopCharArray.emplace_back("\\xFF");
+    stopCharCode.emplace_back("Lexenv::EOF_SYMBOL");
+
+    symbolNumber = 1;
+    stopCharNumber = 1;
+
     // Prepare the line reading and counter
     std::string line;
 
@@ -45,13 +39,28 @@ void parseLexFile(std::ifstream &lexFile) {
 
             if(line[0] == '-') {
 
+                // Add the stop char to the general symbol name array
                 std::string stopCharName = line.substr(1, delimiterPosition - 1);
-                std::string stopChars = line.substr(delimiterPosition + 1, line.length() - delimiterPosition);
+                nameArray.emplace_back(stopCharName);
 
-                // Place the stop char in the vector
-                symbolNameVector.emplace_back(stopCharName);
-                stopCharsVector.emplace_back(stopChars);
-                stopCharNumber++;
+                std::string stopChars = line.substr(delimiterPosition + 1, line.length() - delimiterPosition);
+                for(int i = 0; i < stopChars.size(); i++) {
+                    std::string sChar;
+                    if(stopChars[i]== '\\') {
+                        sChar.push_back('\\');
+                        sChar.push_back(stopChars[++i]);
+                    } else {
+                        sChar.push_back(stopChars[i]);
+                    }
+
+                    // Add the stop character to the vector
+                    stopCharArray.emplace_back(sChar);
+                    stopCharCode.emplace_back("Lexenv::" + stopCharName);
+
+                    // Increase the stop char number
+                    stopCharNumber++;
+                }
+
 
             } else {
 
@@ -59,8 +68,9 @@ void parseLexFile(std::ifstream &lexFile) {
                 std::string tokenRegex = line.substr(delimiterPosition + 1, line.length() - delimiterPosition);
 
                 // Place the token definition in the wanted vectors
-                symbolNameVector.emplace_back(tokenName);
-                symbolRegexVector.emplace_back(tokenRegex);
+                nameArray.emplace_back(tokenName);
+                regexArray.emplace_back(tokenRegex);
+                regexCode.emplace_back("Lexenv::" + tokenName);
                 regexNumber++;
 
             }
@@ -74,10 +84,9 @@ void parseLexFile(std::ifstream &lexFile) {
             std::string symbolName = line.substr(1, line.length() - 1);
 
             // Place the symbol in the symbol vector
-            symbolNameVector.emplace_back(symbolName);
+            nameArray.emplace_back(symbolName);
 
             // Increment the symbol number
-            symbolOnlyNumber++;
             symbolNumber++;
 
         }
@@ -100,10 +109,6 @@ int exportLexEnv(const std::string &exportDirectory) {
         return 1;
     }
 
-    // Get the real number of stop char
-    int realStopCharNumber = getRealStopCharNumber();
-    int stopCounter = 0;
-
     // --- Export the H part
 
     // Prepare the H string
@@ -118,11 +123,11 @@ int exportLexEnv(const std::string &exportDirectory) {
 
     // Export static fields
     hExportString += "\tinline const static int symbolNumber = " + std::to_string(symbolNumber) + ";\n";
-    hExportString += "\tinline const static int stopCharNumber = " + std::to_string(realStopCharNumber) + ";\n";
+    hExportString += "\tinline const static int stopCharNumber = " + std::to_string(stopCharNumber) + ";\n";
     hExportString += "\tinline const static int regexNumber = " + std::to_string(regexNumber) + ";\n\n";
 
     for(int i = 0; i < symbolNumber; i++) {
-        hExportString += "\tinline const static int " + symbolNameVector[i] + " = " + std::to_string(i) + ";\n";
+        hExportString += "\tinline const static int " + nameArray[i] + " = " + std::to_string(i) + ";\n";
     }
 
     // Export the functions profile
@@ -143,48 +148,27 @@ int exportLexEnv(const std::string &exportDirectory) {
 
     // Prepare the export strings
     std::string nameArrayString = "const char *Lexenv::nameArray[" + std::to_string(symbolNumber) + "] = {";
-    std::string stopCharArrayString = "const char Lexenv::stopCharArray[" + std::to_string(realStopCharNumber) + "] = {";
-    std::string stopCharCodeString = "const int Lexenv::stopCharCode[" + std::to_string(realStopCharNumber) + "] = {";
+    std::string stopCharArrayString = "const char Lexenv::stopCharArray[" + std::to_string(stopCharNumber) + "] = {";
+    std::string stopCharCodeString = "const int Lexenv::stopCharCode[" + std::to_string(stopCharNumber) + "] = {";
     std::string regexArrayString = "const char *Lexenv::regexArray[" + std::to_string(regexNumber) + "] = {";
     std::string regexCodeString = "const int Lexenv::regexCode[" + std::to_string(regexNumber) + "] = {";
-    std::string regexTArrayString = "regex_t Lexenv::regexTArray[" + std::to_string(regexNumber) + "];\n";
+    std::string regexTArrayString = "regex_t Lexenv::regexTArray[" + std::to_string(regexNumber) + "];\n\n";
 
     // Export all values
-    for(int i = 0; i < symbolNumber - symbolOnlyNumber; i++) {
-        if(i < stopCharNumber) {
-
-            nameArrayString += "\"" + symbolNameVector[i] + "\"";
-            if(i < symbolNumber - 1) {
-                nameArrayString += ", ";
-            }
-
-            std::string currentStopChars = stopCharsVector[i];
-            for(int j = 0; j < currentStopChars.length(); j++) {
-                std::string stopChar = currentStopChars[j] == '\\' ? currentStopChars.substr(j++, 2) : currentStopChars.substr(j, 1);
-                stopCharArrayString += "'" + stopChar + "'";
-                stopCharCodeString += "Lexenv::" + symbolNameVector[i];
-
-                if(stopCounter < realStopCharNumber - 1) {
-                    stopCharArrayString += ", ";
-                    stopCharCodeString += ", ";
-                }
-
-                stopCounter++;
-            }
-
-        } else {
-
-            nameArrayString += "\"" + symbolNameVector[i] + "\"";
-            regexArrayString += "R\"(^" + symbolRegexVector[i - stopCharNumber] + "$)\"";
-            regexCodeString += "Lexenv::" + symbolNameVector[i];
-
-            if(i < symbolNumber - symbolOnlyNumber - 1) {
-                nameArrayString += ", ";
-                regexArrayString += ", ";
-                regexCodeString += ", ";
-            }
-
-        }
+    for(std::string &name : nameArray) {
+        nameArrayString +=  "\"" + name + "\", ";
+    }
+    for(std::string &scn : stopCharArray) {
+        stopCharArrayString += "'" + scn + "', ";
+    }
+    for(std::string &scc : stopCharCode) {
+        stopCharCodeString += scc + ", ";
+    }
+    for(std::string &rn : regexArray) {
+        regexArrayString += "R\"(^" + rn + "$)\", ";
+    }
+    for(std::string &rc : regexCode) {
+        regexCodeString += rc + ", ";
     }
 
     // Close the exported arrays
