@@ -1,8 +1,6 @@
 #ifndef CPP_WOL_UTILS_H
 #define CPP_WOL_UTILS_H
 
-#define EOF_CHAR = '\xFF'
-
 #include <iostream>
 #include <string>
 #include <vector>

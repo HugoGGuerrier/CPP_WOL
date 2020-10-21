@@ -14,7 +14,7 @@ public:
 	const static int regexCode[];
 	static regex_t regexTArray[];
 
-	inline const static int symbolNumber = 42;
+	inline const static int symbolNumber = 43;
 	inline const static int stopCharNumber = 23;
 	inline const static int regexNumber = 23;
 
@@ -60,6 +60,7 @@ public:
 	inline const static int NUMBER_VAL = 39;
 	inline const static int IDENTIFIER = 40;
 	inline const static int CHAR_VAL = 41;
+	inline const static int STRING_VAL = 42;
 
 	static int getStopCharCode(char charToTest);
 	static int getLexicalTokenCode(char *strToTest);

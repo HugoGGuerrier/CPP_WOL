@@ -17,15 +17,15 @@ int Token::getId() const {
     return this->id;
 }
 
-int Token::getLine() const {
+unsigned int Token::getLine() const {
     return this->line;
 }
 
-int Token::getStartPos() const {
+unsigned int Token::getStartPos() const {
     return this->startPos;
 }
 
-int Token::getEndPos() const {
+unsigned int Token::getEndPos() const {
     return this->endPos;
 }
 
@@ -46,15 +46,15 @@ void Token::setId(int newId) {
     this->id = newId;
 }
 
-void Token::setLine(int ln) {
+void Token::setLine(unsigned int ln) {
     this->line = ln;
 }
 
-void Token::setStartPos(int sp) {
+void Token::setStartPos(unsigned int sp) {
     this->startPos = sp;
 }
 
-void Token::setEndPos(int ep) {
+void Token::setEndPos(unsigned int ep) {
     this->endPos = ep;
 }
 

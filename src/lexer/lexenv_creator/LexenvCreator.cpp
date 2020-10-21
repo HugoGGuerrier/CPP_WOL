@@ -10,6 +10,7 @@ std::vector<std::string> symbolRegexVector;
 int symbolNumber = 0;
 int stopCharNumber = 0;
 int regexNumber = 0;
+int symbolOnlyNumber = 0;
 
 /**
  * Get the real number of stop chars
@@ -41,6 +42,7 @@ void parseLexFile(std::ifstream &lexFile) {
         int delimiterPosition = line.find(':');
 
         if(delimiterPosition != -1) {
+
             if(line[0] == '-') {
 
                 std::string stopCharName = line.substr(1, delimiterPosition - 1);
@@ -65,6 +67,19 @@ void parseLexFile(std::ifstream &lexFile) {
 
             // Increment number of found symbols
             symbolNumber++;
+
+        } else if(line[0] == '~') {
+
+            // Handle the symbol only lines
+            std::string symbolName = line.substr(1, line.length() - 1);
+
+            // Place the symbol in the symbol vector
+            symbolNameVector.emplace_back(symbolName);
+
+            // Increment the symbol number
+            symbolOnlyNumber++;
+            symbolNumber++;
+
         }
     }
 }
@@ -135,7 +150,7 @@ int exportLexEnv(const std::string &exportDirectory) {
     std::string regexTArrayString = "regex_t Lexenv::regexTArray[" + std::to_string(regexNumber) + "];\n";
 
     // Export all values
-    for(int i = 0; i < symbolNumber; i++) {
+    for(int i = 0; i < symbolNumber - symbolOnlyNumber; i++) {
         if(i < stopCharNumber) {
 
             nameArrayString += "\"" + symbolNameVector[i] + "\"";
@@ -163,7 +178,7 @@ int exportLexEnv(const std::string &exportDirectory) {
             regexArrayString += "R\"(^" + symbolRegexVector[i - stopCharNumber] + "$)\"";
             regexCodeString += "Lexenv::" + symbolNameVector[i];
 
-            if(i < symbolNumber - 1) {
+            if(i < symbolNumber - symbolOnlyNumber - 1) {
                 nameArrayString += ", ";
                 regexArrayString += ", ";
                 regexCodeString += ", ";

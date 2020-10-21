@@ -113,6 +113,11 @@ private:
     void evalString(char charToEval);
 
     /**
+     * Evaluate the current buffer and append it to the lexing result
+     */
+    void evalBuffer();
+
+    /**
      * Update the position in the file to lex to keep the correct position in the data
      *
      * @param charToEval The char to eval
@@ -133,7 +138,7 @@ private:
      *
      * @param tokenId The ID of the token to add
      */
-    void addToken(int tokenId, int startPos, int endPos, int line, const char *value = nullptr);
+    void addToken(int tokenId, unsigned int startPos, unsigned int endPos, unsigned int line, const char *value = nullptr);
 
 public:
 

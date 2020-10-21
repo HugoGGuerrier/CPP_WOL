@@ -19,17 +19,17 @@ private:
     /**
      * The line of the token in the lexed file
      */
-    int line;
+    unsigned int line;
 
     /**
      * The start position of the token in the line
      */
-    int startPos;
+    unsigned int startPos;
 
     /**
      * The end position of the token in the line
      */
-    int endPos;
+    unsigned int endPos;
 
     /**
      * The value of the token (used for identifiers, classes, attributes...)
@@ -56,11 +56,11 @@ public:
 
     [[nodiscard]] int getId() const;
 
-    [[nodiscard]] int getLine() const;
+    [[nodiscard]] unsigned int getLine() const;
 
-    [[nodiscard]] int getStartPos() const;
+    [[nodiscard]] unsigned int getStartPos() const;
 
-    [[nodiscard]] int getEndPos() const;
+    [[nodiscard]] unsigned int getEndPos() const;
 
     [[nodiscard]] const char *getValue() const;
 
@@ -70,11 +70,11 @@ public:
 
     void setId(int newId);
 
-    void setLine(int line);
+    void setLine(unsigned int line);
 
-    void setStartPos(int startPos);
+    void setStartPos(unsigned int startPos);
 
-    void setEndPos(int endPos);
+    void setEndPos(unsigned int endPos);
 
     void setValue(const char *value);
 };

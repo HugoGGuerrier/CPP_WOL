@@ -23,7 +23,7 @@ void Lexer::evalNormal(char charToEval) {
 
     if(this->lexerFlags.COMMENT_START_FLAG) {
         if(charToEval != '/' && charToEval != '*') {
-            // TODO : Add the '/' token to the result
+            this->addToken(Lexenv::DIVIDE, this->lexerData.currentPos - 1, this->lexerData.currentPos, this->lexerData.currentLine);
             this->lexerFlags.COMMENT_START_FLAG = false;
         }
     }
@@ -39,11 +39,18 @@ void Lexer::evalNormal(char charToEval) {
             // Get the token code
             int tokenCode = Lexenv::getLexicalTokenCode(this->lexerData.buffer);
 
-            // Reset the buffer
-            memset(this->lexerData.buffer, 0, Config::maxWordSize * sizeof(char));
-            this->lexerData.bufferPointer = 0;
+            if(tokenCode != -1) {
+                const char *tokenValue = (char *)malloc(this->lexerData.bufferPointer * sizeof(char));
+                memcpy((void *) tokenValue, this->lexerData.buffer, this->lexerData.bufferPointer);
+                this->addToken(tokenCode, this->lexerData.currentPos - this->lexerData.bufferPointer, this->lexerData.currentPos - 1, this->lexerData.currentLine, tokenValue);
 
-            // TODO : Add the token to the result
+                // Reset the buffer
+                memset(this->lexerData.buffer, 0, Config::maxWordSize * sizeof(char));
+                this->lexerData.bufferPointer = 0;
+            } else {
+                std::cout << this->lexerData.buffer << std::endl;
+                this->raiseError("Unknown symbol", this->lexerData.currentLine, this->lexerData.currentPos - this->lexerData.bufferPointer);
+            }
         }
 
         // Special stop char cases
@@ -149,7 +156,7 @@ void Lexer::raiseError(const std::string &message, unsigned int line, unsigned i
     this->lexerData.errorMessage = message;
 }
 
-void Lexer::addToken(int tokenId, int startPos, int endPos, int line, const char *value) {
+void Lexer::addToken(int tokenId, unsigned int startPos, unsigned int endPos, unsigned int line, const char *value) {
     Token newToken;
     newToken.setStartPos(startPos);
     newToken.setEndPos(endPos);
@@ -193,7 +200,7 @@ void Lexer::doLex() {
 
         while(charToEvalInt != EOF && !this->lexerFlags.ERROR_FLAG) {
             charToEvalInt = fgetc(fileToLex);
-            char realChar = charToEvalInt != -1 ? (char) charToEvalInt : '\0';
+            char realChar = charToEvalInt != EOF ? (char) charToEvalInt : '\0';
 
             switch (this->lexerData.currentState) {
 

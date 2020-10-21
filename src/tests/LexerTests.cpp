@@ -57,7 +57,7 @@ int LexerTests::run(){
     } catch (LexingException &e) {
 
         // Nothing just success
-        this->succeedTest(2);
+        this->succeedTest(2, e.what());
 
     } catch (FileException &e) {
 
