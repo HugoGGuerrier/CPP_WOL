@@ -9,6 +9,7 @@ void TestBase::init(int number) {
     this->testMessage = std::vector<std::string>(number);
     this->testStartTime = static_cast<clock_t *>( malloc(number * sizeof(clock_t)) );
     this->testEndTime = static_cast<clock_t *>( malloc(number * sizeof(clock_t)) );
+    this->currentTest = 0;
     this->testNumber = number;
 
     // Fill the result with -1
@@ -19,19 +20,19 @@ void TestBase::init(int number) {
 
 void TestBase::startTest(int index) {
     // Start the wanted test
-    if(index <= this->testNumber && index > 0) {
-        this->testStartTime[index - 1] = clock();
+    if(index < this->testNumber && index >= 0) {
+        this->testStartTime[index] = clock();
         this->currentTest = index;
     }
 }
 
 void TestBase::succeedTest(const std::string &message) {
     // Succeed the wanted test and get the execution time
-    if(this->currentTest <= this->testNumber && this->currentTest > 0) {
-        if(this->testsStatus[this->currentTest - 1] == -1) {
-            this->testsStatus[this->currentTest - 1] = 0;
-            this->testEndTime[this->currentTest - 1] = clock();
-            this->testMessage[this->currentTest - 1] = message;
+    if(this->currentTest < this->testNumber && this->currentTest >= 0) {
+        if(this->testsStatus[this->currentTest] == -1) {
+            this->testsStatus[this->currentTest] = 0;
+            this->testEndTime[this->currentTest] = clock();
+            this->testMessage[this->currentTest] = message;
         } else {
             Logger::log_test_warn("Test " + std::to_string(this->currentTest) + " already done...");
         }
@@ -40,11 +41,11 @@ void TestBase::succeedTest(const std::string &message) {
 
 void TestBase::failTest(const std::string &message) {
     // Fail the wanted test and get the execution time
-    if(this->currentTest <= this->testNumber && this->currentTest > 0) {
-        if(this->testsStatus[this->currentTest - 1] == -1) {
-            this->testsStatus[this->currentTest - 1] = 1;
-            this->testEndTime[this->currentTest - 1] = clock();
-            this->testMessage[this->currentTest - 1] = message;
+    if(this->currentTest < this->testNumber && this->currentTest >= 0) {
+        if(this->testsStatus[this->currentTest] == -1) {
+            this->testsStatus[this->currentTest] = 1;
+            this->testEndTime[this->currentTest] = clock();
+            this->testMessage[this->currentTest] = message;
         } else {
             Logger::log_test_warn("Test " + std::to_string(this->currentTest) + " already done...");
         }

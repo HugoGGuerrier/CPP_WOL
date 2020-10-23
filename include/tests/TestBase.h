@@ -45,6 +45,12 @@ protected:
      */
     int testNumber;
 
+    /**
+     * Test behavior codes
+     */
+    inline const static int SUCCESS = 1;
+    inline const static int FAILURE = 2;
+
     // ----- Internal methods -----
 
     /**

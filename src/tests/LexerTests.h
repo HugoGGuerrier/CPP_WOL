@@ -16,13 +16,19 @@ private:
 
     // ----- Attributes -----
 
-    inline const static std::string testFile1 = Config::basePath + "/wol_scripts/1.0/lexer_test1.wol";
+    inline const static char *testFiles[] = {
+            "/wol_scripts/1.0/lexer_test1.wol",
+            "/wol_scripts/1.0/lexer_test2.wol",
+            "/wol_scripts/1.0/lexer_test3.wol",
+            "/wol_scripts/1.0/lexer_test4.wol"
+    };
 
-    inline const static std::string testFile2 = Config::basePath + "/wol_scripts/1.0/lexer_test2.wol";
-
-    inline const static std::string testFile3 = Config::basePath + "/wol_scripts/1.0/lexer_test3.wol";
-
-    inline const static std::string testFile4 = Config::basePath + "/wol_scripts/1.0/lexer_test4.wol";
+    inline const static int expectedBahvior[] {
+        SUCCESS,
+        FAILURE,
+        FAILURE,
+        FAILURE
+    };
 
 public:
 
