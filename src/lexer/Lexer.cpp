@@ -119,9 +119,7 @@ void Lexer::evalString(char charToEval) {
         if(charToEval ==  '"') {
             unsigned int startPos = this->lexerData.currentPos - this->lexerData.stringValueBuffer.size();
             unsigned int endPos = this->lexerData.currentPos;
-            char *val = (char *)malloc(this->lexerData.stringValueBuffer.size() * sizeof(char));
-            this->lexerData.stringValueBuffer.copy(val, this->lexerData.stringValueBuffer.size(), 0);
-            this->addToken(Lexenv::STRING_VAL, startPos, endPos, this->lexerData.currentLine, val, this->lexerData.stringValueBuffer.size());
+            this->addToken(Lexenv::STRING_VAL, startPos, endPos, this->lexerData.currentLine, this->lexerData.stringValueBuffer.c_str(), this->lexerData.stringValueBuffer.size());
 
             // Clear the buffer
             this->lexerData.stringValueBuffer.clear();
@@ -143,37 +141,42 @@ void Lexer::evalBuffer() {
     if(tokenCode != -1) {
 
         // Prepare the value buffer
-        char *tokenValue = nullptr;
+        unsigned int size;
 
         switch (tokenCode) {
 
             case Lexenv::NUMBER_VAL:
             case Lexenv::IDENTIFIER:
-                tokenValue = (char *)malloc(this->lexerData.bufferPointer * sizeof(char));
-                memcpy((void *)tokenValue, this->lexerData.buffer, this->lexerData.bufferPointer * sizeof(char));
+                size = this->lexerData.bufferPointer;
                 break;
 
             case Lexenv::CHAR_VAL:
-                tokenValue = (char *)malloc(1 * sizeof(char));
-                char charVal;
                 if(this->lexerData.buffer[1] == '\\') {
-                    int escaped = getEscapedChar(this->lexerData.buffer[2]);
-                    if(escaped != -1) {
-                        charVal = (char)escaped;
+                    int intC = getEscapedChar(this->lexerData.buffer[2]);
+                    if(intC != -1) {
+                        this->lexerData.buffer[0] = (char)intC;
                     } else {
-                        charVal = '\0';
-                        raiseError("Unknown escaped sequence", this->lexerData.currentLine, this->lexerData.currentPos - 4);
+                        this->raiseError("Unknown escaped sequence", this->lexerData.currentLine, this->lexerData.currentPos - 4);
                     }
                 } else {
-                    charVal = this->lexerData.buffer[1];
+                    this->lexerData.buffer[0] = this->lexerData.buffer[1];
                 }
-                tokenValue[0] = charVal;
+                size = 1;
+                break;
+
+            default:
+                size = 0;
                 break;
 
         }
 
+        // Prepare the positions
+        unsigned int sPos = this->lexerData.currentPos - this->lexerData.bufferPointer;
+        unsigned int ePos = this->lexerData.currentPos;
+        unsigned int line = this->lexerData.currentLine;
+
         // Add the token to the result
-        this->addToken(tokenCode, this->lexerData.currentPos - this->lexerData.bufferPointer, this->lexerData.currentPos - 1, this->lexerData.currentLine, tokenValue, this->lexerData.bufferPointer);
+        this->addToken(tokenCode, sPos, ePos, line, this->lexerData.buffer, size);
 
     } else {
 
@@ -240,7 +243,7 @@ void Lexer::doLex() {
     if(this->lexResult.empty()) {
 
         // Open the file to lex
-        FILE *fileToLex = nullptr;
+        FILE *fileToLex;
         fileToLex = fopen(this->file.c_str(), "r");
 
         // Verify the file

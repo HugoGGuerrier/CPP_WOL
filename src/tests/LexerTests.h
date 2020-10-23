@@ -20,6 +20,10 @@ private:
 
     inline const static std::string testFile2 = Config::basePath + "/wol_scripts/1.0/lexer_test2.wol";
 
+    inline const static std::string testFile3 = Config::basePath + "/wol_scripts/1.0/lexer_test3.wol";
+
+    inline const static std::string testFile4 = Config::basePath + "/wol_scripts/1.0/lexer_test4.wol";
+
 public:
 
     // ----- Constructors -----

@@ -16,6 +16,11 @@ protected:
     // ----- Attributes -----
 
     /**
+     * The current test that is running
+     */
+    int currentTest;
+
+    /**
      * All tests status code
      */
     int *testsStatus;
@@ -61,14 +66,14 @@ protected:
      *
      * @param index The test to success
      */
-    void succeedTest(int index, const std::string &message = "");
+    void succeedTest(const std::string &message = "");
 
     /**
      * Mark a test as failure
      *
      * @param index The test to fail
      */
-    void failTest(int index, const std::string &message = "");
+    void failTest(const std::string &message = "");
 
     /**
      * Function to verify and display all the classes tests

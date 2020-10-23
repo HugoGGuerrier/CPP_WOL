@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "lexer/Token.h"
 #include "Lexenv.h"
 
@@ -10,12 +12,6 @@ Token::Token() {
     this->endPos = -1;
     this->value = nullptr;
     this->valueSize = 0;
-}
-
-// ----- Destructor -----
-
-Token::~Token() {
-    free((void *) this->value);
 }
 
 // ----- Getters -----
@@ -70,8 +66,14 @@ void Token::setEndPos(unsigned int ep) {
 }
 
 void Token::setValue(const char *v, unsigned int size) {
-    this->value = v;
-    this->valueSize = size;
+    if(size > 0) {
+        this->valueSize = size;
+        this->value = (char *)malloc(size * sizeof(char));
+        memcpy((void *)this->value, v, size * sizeof(char));
+    } else {
+        this->valueSize = 0;
+        this->value = nullptr;
+    }
 }
 
 // ----- Class methods -----

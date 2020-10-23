@@ -21,31 +21,32 @@ void TestBase::startTest(int index) {
     // Start the wanted test
     if(index <= this->testNumber && index > 0) {
         this->testStartTime[index - 1] = clock();
+        this->currentTest = index;
     }
 }
 
-void TestBase::succeedTest(int index, const std::string &message) {
+void TestBase::succeedTest(const std::string &message) {
     // Succeed the wanted test and get the execution time
-    if(index <= this->testNumber && index > 0) {
-        if(this->testsStatus[index - 1] == -1) {
-            this->testsStatus[index - 1] = 0;
-            this->testEndTime[index - 1] = clock();
-            this->testMessage[index - 1] = message;
+    if(this->currentTest <= this->testNumber && this->currentTest > 0) {
+        if(this->testsStatus[this->currentTest - 1] == -1) {
+            this->testsStatus[this->currentTest - 1] = 0;
+            this->testEndTime[this->currentTest - 1] = clock();
+            this->testMessage[this->currentTest - 1] = message;
         } else {
-            Logger::log_test_warn("Test " + std::to_string(index) + " already done...");
+            Logger::log_test_warn("Test " + std::to_string(this->currentTest) + " already done...");
         }
     }
 }
 
-void TestBase::failTest(int index, const std::string &message) {
+void TestBase::failTest(const std::string &message) {
     // Fail the wanted test and get the execution time
-    if(index <= this->testNumber && index > 0) {
-        if(this->testsStatus[index - 1] == -1) {
-            this->testsStatus[index - 1] = 1;
-            this->testEndTime[index - 1] = clock();
-            this->testMessage[index - 1] = message;
+    if(this->currentTest <= this->testNumber && this->currentTest > 0) {
+        if(this->testsStatus[this->currentTest - 1] == -1) {
+            this->testsStatus[this->currentTest - 1] = 1;
+            this->testEndTime[this->currentTest - 1] = clock();
+            this->testMessage[this->currentTest - 1] = message;
         } else {
-            Logger::log_test_warn("Test " + std::to_string(index) + " already done...");
+            Logger::log_test_warn("Test " + std::to_string(this->currentTest) + " already done...");
         }
     }
 }

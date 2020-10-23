@@ -33,11 +33,22 @@ bool fileExists(const std::string &file);
 int getEscapedChar(char charToEscape);
 
 /**
- * Display a vector of token
+ * Get the string representation of the wanted vector
  *
  * @param vec The vector to display
+ * @param nl If you want the string to do a newline after each element
+ * @return The string representation of the vector
  */
 std::string vectos(const std::vector<Token> &vec, bool nl = false);
+
+/**
+ * Get the string representation of a vector of string
+ *
+ * @param vec The vector to convert
+ * @param nl If you want the string to do a newline after each element
+ * @return The string representation of the vector
+ */
+std::string vectos(const std::vector<std::string> &vec, bool nl = false);
 
 
 #endif // CPP_WOL_UTILS_H

@@ -8,7 +8,7 @@
 // ----- Constructors -----
 
 LexerTests::LexerTests() {
-    this->init(2);
+    this->init(4);
 }
 
 // ----- Class methods -----
@@ -17,6 +17,8 @@ int LexerTests::run(){
     // Create the lexers for the tests
     Lexer lexer1(LexerTests::testFile1);
     Lexer lexer2(LexerTests::testFile2);
+    Lexer lexer3(LexerTests::testFile3);
+    Lexer lexer4(LexerTests::testFile4);
 
     // --- Run the test 1 that should succeed
 
@@ -28,21 +30,21 @@ int LexerTests::run(){
         // Lex the file
         lexer1.doLex();
 
-        this->succeedTest(1, "File successfully lexed !");
-
+        // Verify the result
         std::vector<Token> res;
         lexer1.getLexResult(res);
-        Logger::log_dev(vectos(res));
+
+        this->succeedTest("File successfully lexed ! " + vectos(res));
 
     } catch (FileException &e) {
 
         // Fail the test
-        this->failTest(1, e.what());
+        this->failTest(e.what());
 
     } catch (LexingException &e) {
 
         // Fail the test
-        this->failTest(1, e.what());
+        this->failTest(e.what());
 
     }
 
@@ -57,17 +59,63 @@ int LexerTests::run(){
         lexer2.doLex();
 
         // If this code is executed that the Lexer failed
-        this->failTest(2, "Expected to fail lexing !");
+        this->failTest("Expected to fail lexing !");
 
     } catch (LexingException &e) {
 
         // Nothing just success
-        this->succeedTest(2, e.what());
+        this->succeedTest(e.what());
 
     } catch (FileException &e) {
 
         // Log the error
-        this->failTest(2, e.what());
+        this->failTest(e.what());
+
+    }
+
+    // --- Run the test 3 that should fail
+
+    try {
+
+        // Start the test
+        this->startTest(3);
+
+        // Lex the file
+        lexer3.doLex();
+
+        // If this code is executed that the Lexer failed
+        this->failTest("Expected to fail lexing !");
+
+    } catch (LexingException &e) {
+
+        this->succeedTest(e.what());
+
+    } catch (FileException &e) {
+
+        this->failTest(e.what());
+
+    }
+
+    // --- Run the test 4 that should fail
+
+    try {
+
+        // Start the test
+        this->startTest(4);
+
+        // Lex the file
+        lexer4.doLex();
+
+        // If this code is executed that the Lexer failed
+        this->failTest("Expected to fail lexing !");
+
+    } catch (LexingException &e) {
+
+        this->succeedTest(e.what());
+
+    } catch (FileException &e) {
+
+        this->failTest(e.what());
 
     }
 

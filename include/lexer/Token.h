@@ -52,10 +52,6 @@ public:
      */
     explicit Token();
 
-    // ----- Destructor -----
-
-    ~Token();
-
     // ----- Getters -----
 
     [[nodiscard]] int getId() const;
