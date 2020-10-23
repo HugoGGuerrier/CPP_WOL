@@ -25,7 +25,12 @@ PRIVATE:private
 PROTECTED:protected
 PUBLIC:public
 
-PRINT_FUNC:print
+IF:if
+ELSE:else
+ELIF:elif
+
+PRIM_PRINT:print
+PRIM_SIZE:size
 
 VOID_TYPE:void
 BOOL_TYPE:bool
@@ -44,7 +49,8 @@ TRUE_VAL:true
 FALSE_VAL:false
 NULL_VAL:null|NULL
 
-NUMBER_VAL:\-?[0-9]+(\.?[0-9])?[0-9]*
+INT_VAL:\-?[0-9]+
+FLOAT_VAL:\-?[0-9]+\.[0-9]*
 IDENTIFIER:[a-zA-Z_][a-zA-Z0-9_]*
 CHAR_VAL:('\\?.')
 

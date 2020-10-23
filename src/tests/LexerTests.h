@@ -20,14 +20,16 @@ private:
             "/wol_scripts/1.0/lexer_test1.wol",
             "/wol_scripts/1.0/lexer_test2.wol",
             "/wol_scripts/1.0/lexer_test3.wol",
-            "/wol_scripts/1.0/lexer_test4.wol"
+            "/wol_scripts/1.0/lexer_test4.wol",
+            "/wol_scripts/1.0/lexer_test5.wol",
     };
 
     inline const static int expectedBahvior[] {
         SUCCESS,
         FAILURE,
         FAILURE,
-        FAILURE
+        FAILURE,
+        SUCCESS
     };
 
 public:

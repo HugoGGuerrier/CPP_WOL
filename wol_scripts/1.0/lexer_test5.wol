@@ -1,0 +1,7 @@
+class Main {
+    int a = 5/8;
+
+    public :main(array<string> args) {
+        print(size(args));
+    }
+}

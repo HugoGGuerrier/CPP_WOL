@@ -145,7 +145,8 @@ void Lexer::evalBuffer() {
 
         switch (tokenCode) {
 
-            case Lexenv::NUMBER_VAL:
+            case Lexenv::INT_VAL:
+            case Lexenv::FLOAT_VAL:
             case Lexenv::IDENTIFIER:
                 size = this->lexerData.bufferPointer;
                 break;

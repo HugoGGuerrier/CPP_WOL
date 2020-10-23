@@ -8,14 +8,14 @@
 // ----- Constructors -----
 
 LexerTests::LexerTests() {
-    this->init(4);
+    this->init(5);
 }
 
 // ----- Class methods -----
 
 int LexerTests::run(){
     // Loop over the files to tests to test the lexical analyser
-    for(int i = 0; i < this->testNumber + 1; i++) {
+    for(int i = 0; i < this->testNumber; i++) {
         // Create the wanted lexer
         Lexer lexer(Config::basePath + LexerTests::testFiles[i]);
 
