@@ -115,7 +115,7 @@ private:
     /**
      * Evaluate the current buffer and append it to the lexing result
      */
-    void evalBuffer();
+    void analyseBuffer();
 
     /**
      * Update the position in the file to lex to keep the correct position in the data

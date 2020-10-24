@@ -42,7 +42,7 @@ void Lexer::evalNormal(char charToEval) {
 
         // If the buffer is not empty, evaluate the buffer
         if(this->lexerData.bufferPointer != 0) {
-            this->evalBuffer();
+            this->analyseBuffer();
         }
 
         // Special stop char cases
@@ -133,7 +133,7 @@ void Lexer::evalString(char charToEval) {
     }
 }
 
-void Lexer::evalBuffer() {
+void Lexer::analyseBuffer() {
     // Get the token code
     int tokenCode = Lexenv::getLexicalTokenCode(this->lexerData.buffer);
 

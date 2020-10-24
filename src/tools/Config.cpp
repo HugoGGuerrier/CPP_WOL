@@ -31,7 +31,7 @@ std::string Config::toString() {
     res += includePathsString + ">" + "\n";
 
     res += "\tallocatedMemory = " + std::to_string(Config::allocatedMemory) + "\n";
-    res += "\tmaxWordSize = " + std::to_string(Config::maxWordSize) + "\n";
+    res += "\tmaxWordSize = " + std::to_string(Config::maxWordSize) + "";
 
     return res;
 }

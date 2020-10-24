@@ -3,9 +3,10 @@
 #include <vector>
 #include <string>
 
+const int STOP_CHAR_TABLE_SIZE = 256;
+
 std::vector<std::string> nameArray;
-std::vector<std::string> stopCharArray;
-std::vector<std::string> stopCharCode;
+std::string stopCharTable[STOP_CHAR_TABLE_SIZE];
 std::vector<std::string> literalArray;
 std::vector<std::string> literalCode;
 std::vector<std::string> regexArray;
@@ -17,16 +18,43 @@ int literalNumber = 0;
 int regexNumber = 0;
 
 /**
+ * Get the escaped char value
+ *
+ * @param charToEscape The char to escape
+ * @return The escaped char
+ */
+char getEscapedChar(char charToEscape) {
+    switch (charToEscape) {
+        case 'a': return '\a';
+        case 'b': return '\b';
+        case 'f': return '\f';
+        case 'n': return '\n';
+        case 'r': return '\r';
+        case 't': return '\t';
+        case 'v': return '\v';
+        case '\\': return '\\';
+        case '\'': return '\'';
+        case '"': return '\"';
+        case '?': return '\?';
+        default: return -1;
+    }
+}
+
+/**
  * Function to use to parse the lex file and fill the vectors
  *
  * @param lexFile The file to parse
  */
 void parseLexFile(std::ifstream &lexFile) {
+    // Initialize the stop char table
+    for(auto &str : stopCharTable) {
+        str = "-1";
+    }
+
     // Include the constant symbols
     // --- EOF
     nameArray.emplace_back("EOF_SYMBOL");
-    stopCharArray.emplace_back("\\xFF");
-    stopCharCode.emplace_back("Lexenv::EOF_SYMBOL");
+    stopCharTable[255] = "Lexenv::EOF_SYMBOL";
 
     symbolNumber = 1;
     stopCharNumber = 1;
@@ -48,17 +76,15 @@ void parseLexFile(std::ifstream &lexFile) {
 
                 std::string stopChars = line.substr(delimiterPosition + 1, line.length() - delimiterPosition);
                 for(int i = 0; i < stopChars.size(); i++) {
-                    std::string sChar;
+                    unsigned char sChar;
                     if(stopChars[i]== '\\') {
-                        sChar.push_back('\\');
-                        sChar.push_back(stopChars[++i]);
+                        sChar = getEscapedChar(stopChars[++i]);
                     } else {
-                        sChar.push_back(stopChars[i]);
+                        sChar = stopChars[i];
                     }
 
-                    // Add the stop character to the vector
-                    stopCharArray.emplace_back(sChar);
-                    stopCharCode.emplace_back("Lexenv::" + stopCharName);
+                    // Add the stop character to the table
+                    stopCharTable[sChar] = "Lexenv::" + stopCharName;
 
                     // Increase the stop char number
                     stopCharNumber++;
@@ -129,8 +155,7 @@ int exportLexEnv(const std::string &exportDirectory) {
     std::string hExportString;
     hExportString += "#ifndef CPP_WOL_LEXENV_H\n#define CPP_WOL_LEXENV_H\n\n#include <regex.h>\n\nclass Lexenv {\npublic:\n"
                      "\tconst static char *nameArray[];\n\n"
-                     "\tconst static char stopCharArray[];\n"
-                     "\tconst static int stopCharCode[];\n\n"
+                     "\tconst static int stopCharTable[];\n\n"
                      "\tconst static char *literalArray[];\n"
                      "\tconst static int literalCode[];\n\n"
                      "\tconst static char *regexArray[];\n"
@@ -165,8 +190,7 @@ int exportLexEnv(const std::string &exportDirectory) {
 
     // Prepare the export strings
     std::string nameArrayString = "const char *Lexenv::nameArray[" + std::to_string(symbolNumber) + "] = {";
-    std::string stopCharArrayString = "const char Lexenv::stopCharArray[" + std::to_string(stopCharNumber) + "] = {";
-    std::string stopCharCodeString = "const int Lexenv::stopCharCode[" + std::to_string(stopCharNumber) + "] = {";
+    std::string stopCharTableString = "const int Lexenv::stopCharTable[" + std::to_string(STOP_CHAR_TABLE_SIZE) + "] = {";
     std::string literalArrayString = "const char *Lexenv::literalArray[" + std::to_string(literalNumber) + "] = {";
     std::string literalCodeString = "const int Lexenv::literalCode[" + std::to_string(literalNumber) + "] = {";
     std::string regexArrayString = "const char *Lexenv::regexArray[" + std::to_string(regexNumber) + "] = {";
@@ -177,11 +201,8 @@ int exportLexEnv(const std::string &exportDirectory) {
     for(std::string &name : nameArray) {
         nameArrayString +=  "\"" + name + "\", ";
     }
-    for(std::string &scn : stopCharArray) {
-        stopCharArrayString += "'" + scn + "', ";
-    }
-    for(std::string &scc : stopCharCode) {
-        stopCharCodeString += scc + ", ";
+    for(std::string &scc : stopCharTable) {
+        stopCharTableString += scc + ", ";
     }
     for(std::string &ln : literalArray) {
         literalArrayString += "\"" + ln + "\", ";
@@ -198,8 +219,7 @@ int exportLexEnv(const std::string &exportDirectory) {
 
     // Close the exported arrays
     nameArrayString += "};\n\n";
-    stopCharArrayString += "};\n";
-    stopCharCodeString += "};\n\n";
+    stopCharTableString += "};\n\n";
     literalArrayString += "};\n";
     literalCodeString += "};\n\n";
     regexArrayString += "};\n";
@@ -208,7 +228,7 @@ int exportLexEnv(const std::string &exportDirectory) {
     // Write the cpp file
     cppExport <<
     nameArrayString <<
-    stopCharArrayString << stopCharCodeString <<
+    stopCharTableString <<
     literalArrayString << literalCodeString <<
     regexArrayString  << regexCodeString << regexTArrayString;
 
@@ -216,10 +236,7 @@ int exportLexEnv(const std::string &exportDirectory) {
     std::string functionsExportString;
 
     functionsExportString += "int Lexenv::getStopCharCode(char charToTest) {\n"
-                             "    for(int i = 0; i < Lexenv::stopCharNumber; i++) {\n"
-                             "        if(charToTest == Lexenv::stopCharArray[i]) return Lexenv::stopCharCode[i];\n"
-                             "    }\n"
-                             "    return -1;\n"
+                             "    return Lexenv::stopCharTable[(unsigned char)charToTest];\n"
                              "}\n\n";
 
     functionsExportString += "int Lexenv::getLexicalTokenCode(char *strToTest) {\n"

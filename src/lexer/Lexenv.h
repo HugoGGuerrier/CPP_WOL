@@ -7,8 +7,7 @@ class Lexenv {
 public:
 	const static char *nameArray[];
 
-	const static char stopCharArray[];
-	const static int stopCharCode[];
+	const static int stopCharTable[];
 
 	const static char *literalArray[];
 	const static int literalCode[];
