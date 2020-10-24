@@ -10,13 +10,17 @@ public:
 	const static char stopCharArray[];
 	const static int stopCharCode[];
 
+	const static char *literalArray[];
+	const static int literalCode[];
+
 	const static char *regexArray[];
 	const static int regexCode[];
 	static regex_t regexTArray[];
 
 	inline const static int symbolNumber = 49;
 	inline const static int stopCharNumber = 24;
-	inline const static int regexNumber = 28;
+	inline const static int literalNumber = 23;
+	inline const static int regexNumber = 5;
 
 	inline const static int EOF_SYMBOL = 0;
 	inline const static int BLANK = 1;

@@ -6,11 +6,14 @@
 std::vector<std::string> nameArray;
 std::vector<std::string> stopCharArray;
 std::vector<std::string> stopCharCode;
+std::vector<std::string> literalArray;
+std::vector<std::string> literalCode;
 std::vector<std::string> regexArray;
 std::vector<std::string> regexCode;
 
 int symbolNumber = 0;
 int stopCharNumber = 0;
+int literalNumber = 0;
 int regexNumber = 0;
 
 /**
@@ -62,15 +65,26 @@ void parseLexFile(std::ifstream &lexFile) {
                 }
 
 
+            } else if(line[0] == '+') {
+
+                std::string literalName = line.substr(1, delimiterPosition - 1);
+                std::string literalValue = line.substr(delimiterPosition + 1, line.length() - delimiterPosition);
+
+                // Place the literal in the wanted vectors
+                nameArray.emplace_back(literalName);
+                literalArray.emplace_back(literalValue);
+                literalCode.emplace_back("Lexenv::" + literalName);
+                literalNumber++;
+
             } else {
 
-                std::string tokenName = line.substr(0, delimiterPosition);
-                std::string tokenRegex = line.substr(delimiterPosition + 1, line.length() - delimiterPosition);
+                std::string regexName = line.substr(0, delimiterPosition);
+                std::string regexExpr = line.substr(delimiterPosition + 1, line.length() - delimiterPosition);
 
                 // Place the token definition in the wanted vectors
-                nameArray.emplace_back(tokenName);
-                regexArray.emplace_back(tokenRegex);
-                regexCode.emplace_back("Lexenv::" + tokenName);
+                nameArray.emplace_back(regexName);
+                regexArray.emplace_back(regexExpr);
+                regexCode.emplace_back("Lexenv::" + regexName);
                 regexNumber++;
 
             }
@@ -117,6 +131,8 @@ int exportLexEnv(const std::string &exportDirectory) {
                      "\tconst static char *nameArray[];\n\n"
                      "\tconst static char stopCharArray[];\n"
                      "\tconst static int stopCharCode[];\n\n"
+                     "\tconst static char *literalArray[];\n"
+                     "\tconst static int literalCode[];\n\n"
                      "\tconst static char *regexArray[];\n"
                      "\tconst static int regexCode[];\n"
                      "\tstatic regex_t regexTArray[];\n\n";
@@ -124,6 +140,7 @@ int exportLexEnv(const std::string &exportDirectory) {
     // Export static fields
     hExportString += "\tinline const static int symbolNumber = " + std::to_string(symbolNumber) + ";\n";
     hExportString += "\tinline const static int stopCharNumber = " + std::to_string(stopCharNumber) + ";\n";
+    hExportString += "\tinline const static int literalNumber = " + std::to_string(literalNumber) + ";\n";
     hExportString += "\tinline const static int regexNumber = " + std::to_string(regexNumber) + ";\n\n";
 
     for(int i = 0; i < symbolNumber; i++) {
@@ -144,12 +161,14 @@ int exportLexEnv(const std::string &exportDirectory) {
     // --- Export the CPP part
 
     // Include the h file
-    cppExport << "#include \"Lexenv.h\"\n\n";
+    cppExport << "#include <cstring>\n\n#include \"Lexenv.h\"\n\n";
 
     // Prepare the export strings
     std::string nameArrayString = "const char *Lexenv::nameArray[" + std::to_string(symbolNumber) + "] = {";
     std::string stopCharArrayString = "const char Lexenv::stopCharArray[" + std::to_string(stopCharNumber) + "] = {";
     std::string stopCharCodeString = "const int Lexenv::stopCharCode[" + std::to_string(stopCharNumber) + "] = {";
+    std::string literalArrayString = "const char *Lexenv::literalArray[" + std::to_string(literalNumber) + "] = {";
+    std::string literalCodeString = "const int Lexenv::literalCode[" + std::to_string(literalNumber) + "] = {";
     std::string regexArrayString = "const char *Lexenv::regexArray[" + std::to_string(regexNumber) + "] = {";
     std::string regexCodeString = "const int Lexenv::regexCode[" + std::to_string(regexNumber) + "] = {";
     std::string regexTArrayString = "regex_t Lexenv::regexTArray[" + std::to_string(regexNumber) + "];\n\n";
@@ -164,6 +183,12 @@ int exportLexEnv(const std::string &exportDirectory) {
     for(std::string &scc : stopCharCode) {
         stopCharCodeString += scc + ", ";
     }
+    for(std::string &ln : literalArray) {
+        literalArrayString += "\"" + ln + "\", ";
+    }
+    for(std::string &lc : literalCode) {
+        literalCodeString += lc + ", ";
+    }
     for(std::string &rn : regexArray) {
         regexArrayString += "R\"(^" + rn + "$)\", ";
     }
@@ -175,11 +200,17 @@ int exportLexEnv(const std::string &exportDirectory) {
     nameArrayString += "};\n\n";
     stopCharArrayString += "};\n";
     stopCharCodeString += "};\n\n";
+    literalArrayString += "};\n";
+    literalCodeString += "};\n\n";
     regexArrayString += "};\n";
     regexCodeString += "};\n\n";
 
     // Write the cpp file
-    cppExport << nameArrayString << stopCharArrayString << stopCharCodeString << regexArrayString  << regexCodeString << regexTArrayString;
+    cppExport <<
+    nameArrayString <<
+    stopCharArrayString << stopCharCodeString <<
+    literalArrayString << literalCodeString <<
+    regexArrayString  << regexCodeString << regexTArrayString;
 
     // Export the functions
     std::string functionsExportString;
@@ -192,6 +223,9 @@ int exportLexEnv(const std::string &exportDirectory) {
                              "}\n\n";
 
     functionsExportString += "int Lexenv::getLexicalTokenCode(char *strToTest) {\n"
+                             "    for(int i = 0; i < Lexenv::literalNumber; i++) {\n"
+                             "        if(strcmp(strToTest, Lexenv::literalArray[i]) == 0) return Lexenv::literalCode[i];\n"
+                             "    }\n"
                              "    for(int i = 0; i < Lexenv::regexNumber; i++) {\n"
                              "        if(regexec(&Lexenv::regexTArray[i], strToTest, 0, nullptr, 0) == 0) return Lexenv::regexCode[i];\n"
                              "    }\n"
