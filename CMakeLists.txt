@@ -33,7 +33,7 @@ add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/lexer/Lexenv.cpp ${CMAKE_SOURC
 if(${BUILD_FOR_DEV})
     # Set the test directory in the config file
     get_filename_component(BASE_PATH ./ ABSOLUTE)
-    configure_file(include/tools/Config.h.temp ../include/tools/Config.h)
+    configure_file(include/tools/Config.h.temp ${CMAKE_SOURCE_DIR}/include/tools/Config.h)
 
     # Create the dev executable
     add_executable(cpp_wol src/Main_dev.cpp
@@ -59,7 +59,7 @@ if(${BUILD_FOR_DEV})
 else()
     # Set the test dir to void
     set(BASE_PATH "void")
-    configure_file(include/tools/Config.h.temp ../include/Config.h)
+    configure_file(include/tools/Config.h.temp ${CMAKE_SOURCE_DIR}/include/tools/Config.h)
 
     # Create the prod executable
     add_executable(cpp_wol src/Main_prod.cpp
