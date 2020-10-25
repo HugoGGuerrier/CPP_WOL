@@ -8,10 +8,11 @@ class Test {
     }
 }
 
-/*
+/*********
 Multiline
 comment
-*/
+*****************************/
 
 int a = 79876;
 string b = "This is a super test !!!";
+/////// TESZTSETESTES

@@ -4,7 +4,12 @@ cmake_minimum_required(VERSION 3.16)
 
 # Set the cmake configuration
 set(CMAKE_CXX_STANDARD 17)
-set(BUILD_FOR_DEV TRUE)
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    set(BUILD_FOR_DEV TRUE)
+else()
+    set(BUILD_FOR_DEV FALSE)
+endif()
+
 
 # Set the compile variablesudo
 set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
@@ -76,3 +81,7 @@ endif()
 
 # Add the dependency to the lexenv creator
 add_dependencies(cpp_wol lexenv_creator)
+
+# Add unit tests to make CI
+enable_testing()
+add_test(NAME wol_test COMMAND ${EXECUTABLE_OUTPUT_PATH}/cpp_wol -tm -d)

@@ -20,6 +20,7 @@ public:
     inline static bool debugFlag = false;
     inline static bool logFlag = false;
     inline static bool testFlag = false;
+    inline static bool lazyLexer = false;
     inline static std::string logFile = std::string();
     inline static std::string wolFile = std::string();
     inline static std::vector<char *> wolArgs = std::vector<char *>();

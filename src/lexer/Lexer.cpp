@@ -283,7 +283,7 @@ void Lexer::doLex() {
                 case Lexer::ONE_LINE_COMMENT_STATE:
 
                     // If there is a carriage return reset the state to normal
-                    if(realChar == '\n' || realChar == '\r') this->lexerData.currentState = Lexer::NORMAL_STATE;
+                    if(realChar == '\n' || realChar == '\r' | realChar == EOF_CHAR) this->lexerData.currentState = Lexer::NORMAL_STATE;
 
                     break;
 
@@ -317,6 +317,11 @@ void Lexer::doLex() {
         // Close the file and clean memory
         free(this->lexerData.buffer);
         fclose(fileToLex);
+
+        // Verify the buffer states
+        if((this->lexerData.bufferPointer != 0 || !this->lexerData.stringValueBuffer.empty()) && !this->lexerFlags.ERROR_FLAG) {
+            this->raiseError("Cannot parse the file, lexical analyser must have a problem", 1, 1);
+        }
 
         // Handle errors
         if(this->lexerFlags.ERROR_FLAG) {

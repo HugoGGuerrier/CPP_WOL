@@ -172,7 +172,7 @@ public:
      * !!! Critical performance - use low level C functions !!!
      *
      * @throws FileException If the file is unreadable
-     * @throws LexingException If the file contains unlexable tokens
+     * @throws LexingException If the file contains lexical errors
      */
     void doLex();
 };
