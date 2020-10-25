@@ -22,3 +22,8 @@ jobs:
       shell: bash
       working-directory: ./build/
       run: make
+      
+    - name: Run the application in test mode
+      shell: bash
+      working-directory: ./build/
+      run: ctest -V
