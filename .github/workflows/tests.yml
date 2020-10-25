@@ -1,4 +1,4 @@
-name: CMake
+name: CPP_WOL Integrated Unit Tests
 
 on: [push]
 
