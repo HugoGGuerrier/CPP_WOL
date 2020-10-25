@@ -17,3 +17,8 @@ jobs:
       shell: bash
       working-directory: ./build/
       run: cmake .. -DCMAKE_BUILD_TYPE=Debug
+      
+    - name: Build the application
+      shell: bash
+      working-directory: ./build/
+      run: make
