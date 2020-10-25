@@ -31,7 +31,7 @@ add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/lexer/Lexenv.cpp ${CMAKE_SOURC
 
 # Create the final executable, the WOL interpreter in dev or prod mode
 if(${BUILD_FOR_DEV})
-    # Set the test dir
+    # Set the test directory in the config file
     get_filename_component(BASE_PATH ./ ABSOLUTE)
     configure_file(include/tools/Config.h.temp ../include/tools/Config.h)
 
