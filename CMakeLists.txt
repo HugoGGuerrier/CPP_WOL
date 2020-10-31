@@ -41,6 +41,7 @@ if(${BUILD_FOR_DEV})
             src/tools/Config.cpp include/tools/Config.h
             src/tools/Logger.cpp include/tools/Logger.h
             src/tools/Utils.cpp include/tools/Utils.h
+            src/tools/Encodings.cpp include/tools/Encodings.h
             src/lexer/Lexenv.cpp src/lexer/Lexenv.h
             src/lexer/Lexer.cpp include/lexer/Lexer.h
             src/lexer/Token.cpp include/lexer/Token.h
@@ -55,7 +56,8 @@ if(${BUILD_FOR_DEV})
             include/tests/TestBase.h src/tests/TestBase.cpp
             src/tests/TestEngine.cpp include/tests/TestEngine.h
             src/tests/LexerTests.cpp src/tests/LexerTests.h
-            src/tests/UtilsTests.cpp src/tests/UtilsTests.h include/exceptions/BootstrapException.h)
+            src/tests/UtilsTests.cpp src/tests/UtilsTests.h
+            include/exceptions/BootstrapException.h)
 else()
     # Set the test dir to void
     set(BASE_PATH "void")
@@ -67,6 +69,7 @@ else()
             src/tools/Config.cpp include/tools/Config.h
             src/tools/Logger.cpp include/tools/Logger.h
             src/tools/Utils.cpp include/tools/Utils.h
+            src/tools/Encodings.cpp include/tools/Encodings.h
             src/lexer/Lexenv.cpp src/lexer/Lexenv.h
             src/lexer/Lexer.cpp include/lexer/Lexer.h
             src/lexer/Token.cpp include/lexer/Token.h
@@ -76,7 +79,8 @@ else()
 
             include/exceptions/FileException.h
             include/exceptions/CustomBaseException.h
-            include/exceptions/LexingException.h include/exceptions/BootstrapException.h)
+            include/exceptions/LexingException.h
+            include/exceptions/BootstrapException.h)
 endif()
 
 # Add the dependency to the lexenv creator

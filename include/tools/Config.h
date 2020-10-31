@@ -12,7 +12,7 @@ public:
 
     // ----- Attributes -----
 
-    inline const static std::string version = "0.1a";
+    inline const static std::string version = "0.2a";
     inline const static std::string basePath = "/home/hugo/Projects/desktop/CPP_WOL";
 
     inline static bool color = false;
