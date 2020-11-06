@@ -23,6 +23,9 @@ Lexer::Lexer(const std::string &file) {
         throw FileException("Lexer", "doLexInOnce", "File " + this->file + " is missing or unreadable. Cannot continue lexing.");
     }
 
+    // Initialize attributes
+    this->resultPointer = 0;
+
     // Initialize the lexical analysis
     this->lexerData.buffer = (char *)malloc(Config::maxWordSize * sizeof(char));
     memset(this->lexerData.buffer, 0, Config::maxWordSize * sizeof(char));
@@ -272,12 +275,13 @@ void Lexer::doLexInOnce() {
     int charToEvalInt = '\0';
 
     while(charToEvalInt != EOF && !this->lexerFlags.ERROR_FLAG) {
+
         // Get the next char int value (EOF is -1)
         charToEvalInt = fgetc(this->lexerData.file);
 
         // If EOF, set the done flag
         if(charToEvalInt == EOF) {
-            this->lexerFlags.LEXING_DONE = true;
+            this->lexerFlags.LEXING_FINISH = true;
         }
 
         // Get the real char to evaluate it
@@ -340,8 +344,8 @@ void Lexer::doLexInOnce() {
 // ----- Getters -----
 
 void Lexer::getLexResult(std::vector<Token> &result) {
-    // Do the lexing if not done
-    if(!this->lexerFlags.LEXING_DONE) {
+    // Finish the lexing of not
+    if(!this->lexerFlags.LEXING_FINISH) {
         this->doLexInOnce();
     }
 
@@ -350,4 +354,24 @@ void Lexer::getLexResult(std::vector<Token> &result) {
 
     // Copy all tokens in the result vector
     result = this->lexResult;
+}
+
+const Token *Lexer::getNextToken() {
+    if(Config::lazyLexer) {
+
+        // TODO : Make the lazy lexing
+        return nullptr;
+
+    } else {
+
+        // If the lexer is not lazy
+        if(!this->lexerFlags.LEXING_FINISH) this->doLexInOnce();
+
+        if(this->resultPointer < this->lexResult.size()) {
+            return &(this->lexResult[this->resultPointer++]);
+        } else {
+            return nullptr;
+        }
+
+    }
 }

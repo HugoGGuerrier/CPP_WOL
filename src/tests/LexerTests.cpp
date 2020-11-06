@@ -24,8 +24,6 @@ int LexerTests::run(){
 
         try {
 
-            lexer.doLexInOnce();
-
             std::vector<Token> res;
             lexer.getLexResult(res);
 

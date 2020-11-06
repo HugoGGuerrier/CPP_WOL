@@ -45,7 +45,7 @@ struct lexer_flags {
     bool COMMENT_START_FLAG = false;
     bool COMMENT_MULTILINE_END_FLAG = false;
     bool NEXT_ESCAPED_FLAG = false;
-    bool LEXING_DONE = false;
+    bool LEXING_FINISH = false;
 };
 
 /**
@@ -208,7 +208,7 @@ public:
      * @param result The token to return
      * @throws Exception if the lexical analysis has failed
      */
-    void getNextToken(Token &result);
+    const Token *getNextToken();
 };
 
 #endif // CPP_WOL_LEXER_H
