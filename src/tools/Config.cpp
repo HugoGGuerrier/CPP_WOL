@@ -15,6 +15,7 @@ std::string Config::toString() {
     res += "\tdebugFlag = " + btos(Config::debugFlag) + "\n";
     res += "\tlogFlag = " + btos(Config::logFlag) + "\n";
     res += "\ttestFlag = " + btos(Config::testFlag) + "\n";
+    res += "\tlazyLexer = " + btos(Config::lazyLexer) + "\n";
     res += "\tlogFile = " + Config::logFile + "\n";
     res += "\twolFile = " + Config::wolFile + "\n";
 

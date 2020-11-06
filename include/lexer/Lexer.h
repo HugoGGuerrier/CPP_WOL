@@ -13,6 +13,9 @@
  * The lexer data structure to avoid storing it in the class
  */
 struct lexer_data {
+    /** The file */
+    FILE *file;
+
     /** The lexical buffer */
     char *buffer = nullptr;
     unsigned int bufferPointer = 0;
@@ -42,6 +45,7 @@ struct lexer_flags {
     bool COMMENT_START_FLAG = false;
     bool COMMENT_MULTILINE_END_FLAG = false;
     bool NEXT_ESCAPED_FLAG = false;
+    bool LEXING_DONE = false;
 };
 
 /**
@@ -63,6 +67,11 @@ private:
      * The lexical result of the wanted file in a single array
      */
     std::vector<Token> lexResult;
+
+    /**
+     * The pointer to return token in order
+     */
+    unsigned long resultPointer;
 
     /**
      * Data of the lexer to process the lexical analysis
@@ -99,23 +108,9 @@ private:
     // ----- Internal methods -----
 
     /**
-     * Evaluate a character with the normal state actions
-     *
-     * @param charToEval The char to eval
-     */
-    void evalNormal(char charToEval);
-
-    /**
-     * Evaluate a character with the string state actions
-     *
-     * @param charToEval The character to eval
-     */
-    void evalString(char charToEval);
-
-    /**
      * Evaluate the current buffer and append it to the lexing result
      */
-    void analyseBuffer();
+    void doBufferLexing();
 
     /**
      * Update the position in the file to lex to keep the correct position in the data
@@ -125,7 +120,7 @@ private:
     void updatePosition(char charToEval);
 
     /**
-     * Raise an error at the wanted line and with the wanted message, use it to uniform error raising
+     * Raise an error at the wanted line and with the wanted message, use it to uniform error raising in the Lexer
      *
      * @param message The message to display
      * @param line The line of the error
@@ -140,6 +135,47 @@ private:
      */
     void addToken(int tokenId, unsigned int startPos, unsigned int endPos, unsigned int line, const char *value = nullptr, unsigned int size = 0);
 
+    // ----- State evaluation methods -----
+
+    /**
+     * Evaluate a character with the normal state actions
+     *
+     * @param charToEval The char to eval
+     */
+    void evalNormal(char charToEval);
+
+    /**
+     * Evaluate a character with the string state actions
+     *
+     * @param charToEval The character to eval
+     */
+    void evalString(char charToEval);
+
+    /**
+     * Evaluate a character with the one line comment state
+     *
+     * @param charToEval The character to eval
+     */
+    void evalOneLineComment(char charToEval);
+
+    /**
+     * Evaluate a character with the multi line comment state
+     *
+     * @param charToEval The character to eval
+     */
+    void evalMultiLineComment(char charToEval);
+
+    // ----- Lexical analyzer starting methods -----
+
+    /**
+     * Do the lexical analysis in once
+     *
+     * !!! Critical performance - use low level C functions !!!
+     *
+     * @throws LexingException If the file contains lexical errors
+     */
+    void doLexInOnce();
+
 public:
 
     // ----- Constructors -----
@@ -148,6 +184,7 @@ public:
      * Construct a new lexer with the wanted file
      *
      * @param inputFile The pointer to the file you want to lex
+     * @throws FileException If the file is unreadable
      */
     explicit Lexer(const std::string &file);
 
@@ -158,23 +195,20 @@ public:
     // ----- Getters -----
 
     /**
-     * Get the lexing result in a vector by copying it
+     * Get the lexing result in a vector by copying it, force the lexical analysis in once
      *
      * @param result The vector you want to store the result in
+     * @throws Exception if the lexical analysis has failed
      */
-    void getLexResult(std::vector<Token> &result) const;
-
-    // ----- Class methods -----
+    void getLexResult(std::vector<Token> &result);
 
     /**
-     * Do the lexical analysis process
+     * Get the next token in the file
      *
-     * !!! Critical performance - use low level C functions !!!
-     *
-     * @throws FileException If the file is unreadable
-     * @throws LexingException If the file contains lexical errors
+     * @param result The token to return
+     * @throws Exception if the lexical analysis has failed
      */
-    void doLex();
+    void getNextToken(Token &result);
 };
 
 #endif // CPP_WOL_LEXER_H

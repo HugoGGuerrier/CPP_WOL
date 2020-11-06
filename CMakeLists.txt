@@ -2,19 +2,20 @@
 project(cpp_wol)
 cmake_minimum_required(VERSION 3.16)
 
-# Set the cmake configuration
+# Set the compile common variable
 set(CMAKE_CXX_STANDARD 17)
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    set(BUILD_FOR_DEV TRUE)
-else()
-    set(BUILD_FOR_DEV FALSE)
-endif()
-
-
-# Set the compile variablesudo
-set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
 set(LEXER_DIR ${CMAKE_SOURCE_DIR}/src/lexer)
 set(LEXENV_CREATOR_DIR ${LEXER_DIR}/lexenv_creator)
+
+# Set the cmake configuration between prod and dev
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    set(BUILD_FOR_DEV TRUE)
+    set(EXECUTABLE_OUTPUT_PATH bin/dev)
+else()
+    set(BUILD_FOR_DEV FALSE)
+    set(EXECUTABLE_OUTPUT_PATH bin/prod)
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+endif()
 
 # Set the include directory
 include_directories(include)
