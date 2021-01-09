@@ -47,7 +47,7 @@ if(${BUILD_FOR_DEV})
             src/lexer/Lexer.cpp include/lexer/Lexer.h
             src/lexer/Token.cpp include/lexer/Token.h
             src/vm/VirtualMachine.cpp include/vm/VirtualMachine.h
-            src/parser/ast/Program.cpp include/parser/ast/Program.h
+            src/ast/Program.cpp include/ast/Program.h
             src/vm/FilePool.cpp include/vm/FilePool.h
 
             include/exceptions/CustomBaseException.h
@@ -75,7 +75,7 @@ else()
             src/lexer/Lexer.cpp include/lexer/Lexer.h
             src/lexer/Token.cpp include/lexer/Token.h
             src/vm/VirtualMachine.cpp include/vm/VirtualMachine.h
-            src/parser/ast/Program.cpp include/parser/ast/Program.h
+            src/ast/Program.cpp include/ast/Program.h
             src/vm/FilePool.cpp include/vm/FilePool.h
 
             include/exceptions/FileException.h

@@ -13,8 +13,9 @@
  * The lexer data structure to avoid storing it in the class
  */
 struct lexer_data {
-    /** The file */
+    /** The file and info about it */
     FILE *file;
+    int encoding;
 
     /** The lexical buffer */
     char *buffer = nullptr;
@@ -41,7 +42,7 @@ struct lexer_data {
  */
 struct lexer_flags {
     bool ERROR_FLAG = false;
-    bool WINDOWS_NEW_LINE_FLAG = false;
+    bool CARRIAGE_NEWLINE = false;
     bool COMMENT_START_FLAG = false;
     bool COMMENT_MULTILINE_END_FLAG = false;
     bool NEXT_ESCAPED_FLAG = false;
@@ -108,6 +109,13 @@ private:
     // ----- Internal methods -----
 
     /**
+     * Get the next character in the file regardless of the encoding
+     *
+     * @return The next char
+     */
+    char getNextChar();
+
+    /**
      * Evaluate the current buffer and append it to the lexing result
      */
     void doBufferLexing();
@@ -123,17 +131,16 @@ private:
      * Raise an error at the wanted line and with the wanted message, use it to uniform error raising in the Lexer
      *
      * @param message The message to display
-     * @param line The line of the error
-     * @param pos The position of the error
+     * @param offset The number of char the error is behind
      */
-    void raiseError(const std::string &message, unsigned int line, unsigned int pos);
+    void raiseError(const std::string &message, unsigned int offset);
 
     /**
      * Add a token with the wanted ID to the lex result
      *
      * @param tokenId The ID of the token to add
      */
-    void addToken(int tokenId, unsigned int startPos, unsigned int endPos, unsigned int line, const char *value = nullptr, unsigned int size = 0);
+    void addToken(int tokenId, unsigned int startPos, unsigned int endPos, const char *value = nullptr, unsigned int size = 0);
 
     // ----- State evaluation methods -----
 

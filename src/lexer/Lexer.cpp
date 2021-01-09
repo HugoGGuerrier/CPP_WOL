@@ -42,36 +42,51 @@ Lexer::~Lexer() {
 
 // ----- Internal methods -----
 
+char Lexer::getNextChar() {
+    return '0';
+}
+
 void Lexer::doBufferLexing() {
-    // Get the token code
+    // Get the token code with the lexical environment
     int tokenCode = Lexenv::getLexicalTokenCode(this->lexerData.buffer);
 
     // If the token code is known, add the token to the result, else raise an error
     if(tokenCode != -1) {
 
-        // Prepare the value buffer
+        // Prepare the size of the string to add in the token
         unsigned int size;
 
+        // This switch handle all token with necessary value (int, char, identifier...)
         switch (tokenCode) {
 
+            // If the token is a int value, a float value or a identifier
             case Lexenv::INT_VAL:
             case Lexenv::FLOAT_VAL:
             case Lexenv::IDENTIFIER:
                 size = this->lexerData.bufferPointer;
                 break;
 
+            // If the value is a character value
             case Lexenv::CHAR_VAL:
+                // All char have a size of 1
+                size = 1;
+
+                // Test if the char is escaped or not
                 if(this->lexerData.buffer[1] == '\\') {
+
                     int intC = getEscapedChar(this->lexerData.buffer[2]);
                     if(intC != -1) {
                         this->lexerData.buffer[0] = (char)intC;
                     } else {
-                        this->raiseError("Unknown escaped sequence", this->lexerData.currentLine, this->lexerData.currentPos - 4);
+                        this->raiseError("Unknown escaped sequence", 1);
                     }
+
                 } else {
+
                     this->lexerData.buffer[0] = this->lexerData.buffer[1];
+
                 }
-                size = 1;
+
                 break;
 
             default:
@@ -83,14 +98,14 @@ void Lexer::doBufferLexing() {
         // Prepare the positions
         unsigned int sPos = this->lexerData.currentPos - this->lexerData.bufferPointer;
         unsigned int ePos = this->lexerData.currentPos;
-        unsigned int line = this->lexerData.currentLine;
 
         // Add the token to the result
-        this->addToken(tokenCode, sPos, ePos, line, this->lexerData.buffer, size);
+        this->addToken(tokenCode, sPos, ePos, this->lexerData.buffer, size);
 
     } else {
 
-        this->raiseError("Unknown symbol", this->lexerData.currentLine, this->lexerData.currentPos - this->lexerData.bufferPointer);
+        // If the symbol is not know, just raise a lexical error
+        this->raiseError("Unknown symbol", this->lexerData.bufferPointer);
 
     }
 
@@ -103,35 +118,30 @@ void Lexer::updatePosition(char charToEval) {
     // Increase the current position
     this->lexerData.currentPos++;
 
-    // Compatibility with windows written files
-    if(this->lexerFlags.WINDOWS_NEW_LINE_FLAG && charToEval != '\n') {
-        this->lexerFlags.WINDOWS_NEW_LINE_FLAG = false;
-    }
-
     // Increase the line number
-    if(charToEval == '\n' && !this->lexerFlags.WINDOWS_NEW_LINE_FLAG) {
-        this->lexerData.currentPos = 1;
+    if(charToEval == '\n' && !this->lexerFlags.CARRIAGE_NEWLINE) {
         this->lexerData.currentLine++;
+        this->lexerData.currentPos = 1;
     } else if(charToEval == '\r') {
-        this->lexerData.currentPos = 1;
         this->lexerData.currentLine++;
-        this->lexerFlags.WINDOWS_NEW_LINE_FLAG = true;
+        this->lexerData.currentPos = 1;
+        this->lexerFlags.CARRIAGE_NEWLINE = true;
     }
 }
 
-void Lexer::raiseError(const std::string &message, unsigned int line, unsigned int pos) {
+void Lexer::raiseError(const std::string &message, unsigned int offset) {
     this->lexerFlags.ERROR_FLAG = true;
-    this->lexerData.errorLine = line;
-    this->lexerData.errorPos = pos;
+    this->lexerData.errorLine = this->lexerData.currentLine;
+    this->lexerData.errorPos = this->lexerData.currentPos - offset;
     this->lexerData.errorMessage = message;
 }
 
-void Lexer::addToken(int tokenId, unsigned int startPos, unsigned int endPos, unsigned int line, const char *value, unsigned int size) {
+void Lexer::addToken(int tokenId, unsigned int startPos, unsigned int endPos, const char *value, unsigned int size) {
     Token newToken;
     newToken.setId(tokenId);
     newToken.setStartPos(startPos);
     newToken.setEndPos(endPos);
-    newToken.setLine(line);
+    newToken.setLine(this->lexerData.currentLine);
     newToken.setValue(value, size);
     this->lexResult.emplace_back(newToken);
 }
@@ -143,7 +153,7 @@ void Lexer::evalNormal(char charToEval) {
 
     if(this->lexerFlags.COMMENT_START_FLAG) {
         if(charToEval != '/' && charToEval != '*') {
-            this->addToken(Lexenv::DIVIDE, this->lexerData.currentPos - 1, this->lexerData.currentPos, this->lexerData.currentLine);
+            this->addToken(Lexenv::DIVIDE, this->lexerData.currentPos - 1, this->lexerData.currentPos);
             this->lexerFlags.COMMENT_START_FLAG = false;
         }
     }
@@ -182,7 +192,7 @@ void Lexer::evalNormal(char charToEval) {
                     this->lexerData.currentState = Lexer::MULTI_LINE_COMMENT_STATE;
                     this->lexerFlags.COMMENT_START_FLAG = false;
                 } else {
-                    this->addToken(Lexenv::TIMES, this->lexerData.currentPos, this->lexerData.currentPos + 1, this->lexerData.currentLine);
+                    this->addToken(Lexenv::TIMES, this->lexerData.currentPos, this->lexerData.currentPos + 1);
                 }
                 break;
 
@@ -191,7 +201,7 @@ void Lexer::evalNormal(char charToEval) {
                 break;
 
             default:
-                this->addToken(stopCharCode, this->lexerData.currentPos, this->lexerData.currentPos + 1, this->lexerData.currentLine);
+                this->addToken(stopCharCode, this->lexerData.currentPos, this->lexerData.currentPos + 1);
                 break;
         }
 
@@ -200,7 +210,7 @@ void Lexer::evalNormal(char charToEval) {
         // If the char isn't a stop char, just put it into the buffer, before verify the buffer size
         if(this->lexerData.bufferPointer >= Config::maxWordSize) {
 
-            this->raiseError("A word exceed the maximum size", this->lexerData.currentLine, this->lexerData.currentPos - this->lexerData.bufferPointer);
+            this->raiseError("A word exceed the maximum size", this->lexerData.bufferPointer);
 
         } else {
 
@@ -212,11 +222,10 @@ void Lexer::evalNormal(char charToEval) {
 }
 
 void Lexer::evalString(char charToEval) {
-    if (charToEval == '\n' || charToEval == '\r' || charToEval == EOF_CHAR) {
+    if (charToEval == '\n' || (charToEval == '\r' && this->lexerFlags.CARRIAGE_NEWLINE) || charToEval == EOF_CHAR) {
 
         // Handle the unfinished string error
-        unsigned int position = this->lexerData.currentPos - this->lexerData.stringValueBuffer.length() - 1;
-        this->raiseError("Unfinished string value", this->lexerData.currentLine, position);
+        this->raiseError("Unfinished string value", this->lexerData.stringValueBuffer.size() + 1);
 
     } else if(this->lexerFlags.NEXT_ESCAPED_FLAG) {
 
@@ -224,20 +233,20 @@ void Lexer::evalString(char charToEval) {
         this->lexerFlags.NEXT_ESCAPED_FLAG = false;
 
         // Handle the possibly escaped chars
-        int escapedCharInt = getEscapedChar(charToEval);
-        if(escapedCharInt == -1) {
-            this->raiseError("Unknown escaped sequence", this->lexerData.currentLine, this->lexerData.currentPos - 2);
+        int cInt = getEscapedChar(charToEval);
+        if(cInt == -1) {
+            this->raiseError("Unknown escaped sequence", 1);
         } else {
-            this->lexerData.stringValueBuffer.push_back((char)escapedCharInt);
+            this->lexerData.stringValueBuffer.push_back((char) cInt);
         }
 
     } else {
 
-        // Append the chars
+        // Append the characters
         if(charToEval ==  '"') {
             unsigned int startPos = this->lexerData.currentPos - this->lexerData.stringValueBuffer.size();
             unsigned int endPos = this->lexerData.currentPos;
-            this->addToken(Lexenv::STRING_VAL, startPos, endPos, this->lexerData.currentLine, this->lexerData.stringValueBuffer.c_str(), this->lexerData.stringValueBuffer.size());
+            this->addToken(Lexenv::STRING_VAL, startPos, endPos, this->lexerData.stringValueBuffer.c_str(), this->lexerData.stringValueBuffer.size());
 
             // Clear the buffer
             this->lexerData.stringValueBuffer.clear();
@@ -252,7 +261,8 @@ void Lexer::evalString(char charToEval) {
 }
 
 void Lexer::evalOneLineComment(char charToEval) {
-    if(charToEval == '\n' || charToEval == '\r' | charToEval == EOF_CHAR) this->lexerData.currentState = Lexer::NORMAL_STATE;
+    if(charToEval == '\n' || (charToEval == '\r' && this->lexerFlags.CARRIAGE_NEWLINE) || charToEval == EOF_CHAR)
+        this->lexerData.currentState = Lexer::NORMAL_STATE;
 }
 
 void Lexer::evalMultiLineComment(char charToEval) {
@@ -319,7 +329,7 @@ void Lexer::doLexInOnce() {
                 break;
 
             default:
-                this->raiseError("Lexer state is not referenced", 1, 1);
+                this->raiseError("Lexer state is not referenced", 0);
                 break;
 
         }
@@ -331,7 +341,7 @@ void Lexer::doLexInOnce() {
 
     // Verify the buffer states
     if((this->lexerData.bufferPointer != 0 || !this->lexerData.stringValueBuffer.empty()) && !this->lexerFlags.ERROR_FLAG) {
-        this->raiseError("Cannot parse the file, lexical analyser must have a problem", 1, 1);
+        this->raiseError("Cannot parse the file, lexical analyser must have a problem", 0);
     }
 
     // Handle errors
